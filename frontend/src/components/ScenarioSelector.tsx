@@ -1,29 +1,28 @@
 import type { Scenario } from "../types";
 
+// TODO: Replace title, subtitle, and detail with domain-specific descriptions
+// for each scenario before presenting this demo.
 const SCENARIOS = [
   {
     key: "A" as Scenario,
     label: "Scenario A",
-    title: "MRI Prior Authorization",
-    subtitle: "Lumbar Spine · CPT 72148",
-    detail: "58-year-old male, PPO/OH. Pended for medical-necessity review. 14-week lumbar radiculopathy with conservative treatment history.",
-    pend: "PA-MN-001",
+    title: "[TODO: Scenario A title]",
+    subtitle: "[TODO: category · identifier]",
+    detail: "[TODO: Brief description of what makes Scenario A interesting for your domain.]",
   },
   {
     key: "B" as Scenario,
     label: "Scenario B",
-    title: "Specialty Drug Infusion",
-    subtitle: "Infliximab (Remicade) · HCPCS J1745",
-    detail: "44-year-old female, PPO/TX. High-cost biologic ($18,420). Step-therapy compliance review triggered by adjudication engine.",
-    pend: "MN-DRUG-HCB-002",
+    title: "[TODO: Scenario B title]",
+    subtitle: "[TODO: category · identifier]",
+    detail: "[TODO: Brief description of what makes Scenario B interesting for your domain.]",
   },
   {
     key: "C" as Scenario,
     label: "Scenario C",
-    title: "GLP-1 Prior Authorization",
-    subtitle: "Semaglutide (Wegovy) 2.4mg · HCPCS S0148",
-    detail: "52-year-old female, PPO/FL. Morbid obesity (BMI 38.2) with T2DM, hypertension, and sleep apnea. Pended for lifestyle program documentation.",
-    pend: "PA-OBE-GLP1-001",
+    title: "[TODO: Scenario C title]",
+    subtitle: "[TODO: category · identifier]",
+    detail: "[TODO: Brief description of what makes Scenario C interesting for your domain.]",
   },
 ];
 
@@ -67,8 +66,6 @@ export default function ScenarioSelector({ active, onSelect, disabled }: Props) 
                   <span style={{ fontSize: 11, color: "var(--mdb-green)", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
                     {s.label}
                   </span>
-                  {" · "}
-                  <span style={{ fontSize: 11, color: "var(--mdb-text-dim)" }}>Pend: {s.pend}</span>
                 </div>
                 {isActive && <span style={{ fontSize: 10, color: "var(--mdb-green)", fontWeight: 700 }}>ACTIVE</span>}
               </div>

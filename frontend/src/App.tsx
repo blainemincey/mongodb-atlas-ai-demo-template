@@ -1,25 +1,32 @@
 import { useState } from "react";
-import type { Scenario, Step, ClaimRecord, EmbeddingResult, SearchResult, RationaleResult } from "./types";
+import type { Scenario, Step, DemoRecord, EmbeddingResult, SearchResults, OutputResult } from "./types";
 import { api } from "./api";
 import Header from "./components/Header";
 import ScenarioSelector from "./components/ScenarioSelector";
 import StepTabs from "./components/StepIndicator";
-import ClaimSummaryBar from "./components/ClaimSummaryBar";
-import ClaimRecordPanel from "./components/ClaimRecord";
+import RecordSummaryBar from "./components/RecordSummaryBar";
+import RecordCard from "./components/RecordCard";
 import EmbeddingStep from "./components/EmbeddingStep";
 import SearchStep, { type SearchFilters } from "./components/SearchStep";
 import ContextPanel from "./components/ContextPanel";
-import RationalePanel from "./components/RationalePanel";
+import OutputPanel from "./components/OutputPanel";
+
+// TODO: Replace scenario labels and descriptions with domain-specific content
+const SCENARIO_CONFIG: Record<Scenario, { label: string; description: string }> = {
+  A: { label: "Scenario A", description: "[TODO: describe this scenario]" },
+  B: { label: "Scenario B", description: "[TODO: describe this scenario]" },
+  C: { label: "Scenario C", description: "[TODO: describe this scenario]" },
+};
 
 type DemoState = {
   scenario: Scenario | null;
   step: Step;
   activeTab: Step;
-  claim: ClaimRecord | null;
+  record: DemoRecord | null;
   embedding: EmbeddingResult | null;
   searchFilters: SearchFilters;
-  searchResult: SearchResult | null;
-  rationale: RationaleResult | null;
+  searchResult: SearchResults | null;
+  aiOutput: OutputResult | null;
   loading: boolean;
   error: string | null;
 };
@@ -28,11 +35,11 @@ const initial: DemoState = {
   scenario: null,
   step: 1,
   activeTab: 1,
-  claim: null,
+  record: null,
   embedding: null,
-  searchFilters: { planType: "", state: "", outcome: "" },
+  searchFilters: { category: "", outcome: "" },
   searchResult: null,
-  rationale: null,
+  aiOutput: null,
   loading: false,
   error: null,
 };
@@ -47,14 +54,8 @@ export default function App() {
   async function selectScenario(scenario: Scenario) {
     set({ ...initial, scenario, loading: true, error: null });
     try {
-      const claim = await api.getClaim(scenario);
-      // Seed filter defaults from the claim so the first search is pre-configured
-      const searchFilters: SearchFilters = {
-        planType: claim.plan_type || "",
-        state: claim.state || "",
-        outcome: "",
-      };
-      set({ scenario, claim, searchFilters, step: 1, activeTab: 1, loading: false });
+      const record = await api.getRecord(scenario);
+      set({ scenario, record, step: 1, activeTab: 1, loading: false });
     } catch (e: unknown) {
       set({ loading: false, error: String(e) });
     }
@@ -65,9 +66,8 @@ export default function App() {
     set({ loading: true, error: null });
     try {
       const embedding = await api.generateEmbedding(state.scenario);
-      const claim = await api.getClaim(state.scenario);
-      // Advance to the Vector Search tab so the next action is immediately visible
-      set({ embedding, claim, step: 2, activeTab: 3, loading: false });
+      const record = await api.getRecord(state.scenario);
+      set({ embedding, record, step: 2, activeTab: 3, loading: false });
     } catch (e: unknown) {
       set({ loading: false, error: String(e) });
     }
@@ -78,7 +78,6 @@ export default function App() {
     set({ loading: true, error: null });
     try {
       const searchResult = await api.runSearch(state.scenario, filters);
-      // Advance to Retrieved Context to show results immediately
       set({ searchResult, step: 3, activeTab: 4, loading: false });
     } catch (e: unknown) {
       set({ loading: false, error: String(e) });
@@ -89,35 +88,34 @@ export default function App() {
     set({ loading: true, error: null });
     try {
       await api.softResetAll();
-      // Return to blank slate — user re-selects scenario to reload
       setState(initial);
     } catch (e: unknown) {
       set({ loading: false, error: String(e) });
     }
   }
 
-  async function runRationale() {
+  async function runOutput() {
     if (!state.scenario || !state.searchResult) return;
     set({ loading: true, error: null });
     try {
-      const rationale = await api.generateRationale(
+      const aiOutput = await api.generateOutput(
         state.scenario,
-        state.searchResult.policies,
-        state.searchResult.prior_claims
+        state.searchResult.knowledge_base,
+        state.searchResult.historical_records
       );
-      set({ rationale, step: 5, activeTab: 5, loading: false });
+      set({ aiOutput, step: 5, activeTab: 5, loading: false });
     } catch (e: unknown) {
       set({ loading: false, error: String(e) });
     }
   }
 
-  const { scenario, step, activeTab, claim, embedding, searchFilters, searchResult, rationale, loading, error } = state;
+  const { scenario, step, activeTab, record, embedding, searchFilters, searchResult, aiOutput, loading, error } = state;
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Header
         onReset={runSoftReset}
-        resetEnabled={!!claim}
+        resetEnabled={!!record}
         resetting={loading}
       />
 
@@ -138,10 +136,10 @@ export default function App() {
           </div>
         )}
 
-        {claim && (
+        {record && (
           <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 16 }}>
-            {/* Claim summary — always visible, updates in place when rationale writes back */}
-            <ClaimSummaryBar claim={claim} rationale={rationale} />
+            {/* Record summary — always visible, updates in place when AI output writes back */}
+            <RecordSummaryBar record={record} output={aiOutput} />
 
             {/* Tab nav */}
             <StepTabs
@@ -153,9 +151,9 @@ export default function App() {
             {/* Active tab panel */}
             <div className="fade-in" key={activeTab} style={{ marginTop: 4 }}>
               {activeTab === 1 && (
-                <ClaimRecordPanel
-                  claim={rationale ? rationale.updated_claim : claim}
-                  updated={!!rationale}
+                <RecordCard
+                  record={aiOutput ? aiOutput.updated_record : record}
+                  updated={!!aiOutput}
                 />
               )}
 
@@ -170,7 +168,7 @@ export default function App() {
 
               {activeTab === 3 && (
                 <SearchStep
-                  claim={claim}
+                  record={record}
                   filters={searchFilters}
                   onFiltersChange={(f) => set({ searchFilters: f })}
                   loading={loading}
@@ -185,27 +183,29 @@ export default function App() {
 
               {activeTab === 4 && !searchResult && (
                 <div style={{ padding: "40px 0", textAlign: "center", color: "var(--mdb-text-dim)", fontSize: 13 }}>
-                  Run Vector Search (tab 3) to retrieve policies and prior cases.
+                  Run Vector Search (tab 3) to retrieve knowledge base items and historical records.
                 </div>
               )}
 
               {activeTab === 5 && (
-                <RationalePanel
-                  result={rationale}
+                <OutputPanel
+                  result={aiOutput}
                   loading={loading}
-                  onGenerate={runRationale}
+                  onGenerate={runOutput}
                 />
               )}
             </div>
           </div>
         )}
 
-        {!claim && !loading && !error && (
+        {!record && !loading && !error && (
           <div style={{ textAlign: "center", marginTop: 80, color: "var(--mdb-text-dim)" }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>⬆</div>
             <p style={{ fontSize: 16, marginBottom: 8 }}>Select a demo scenario above to begin.</p>
             <p style={{ fontSize: 13 }}>
-              Scenario A — MRI Prior Auth &nbsp;·&nbsp; Scenario B — Infliximab Infusion &nbsp;·&nbsp; Scenario C — GLP-1 / Semaglutide
+              {Object.entries(SCENARIO_CONFIG).map(([k, v], i, arr) => (
+                <span key={k}>{v.label}{i < arr.length - 1 ? " · " : ""}</span>
+              ))}
             </p>
           </div>
         )}

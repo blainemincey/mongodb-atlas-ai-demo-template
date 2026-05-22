@@ -2,39 +2,26 @@ export type Scenario = "A" | "B" | "C";
 
 export type Step = 1 | 2 | 3 | 4 | 5;
 
-export interface ClaimRecord {
+export interface DemoRecord {
   _id?: string;
-  claim_id: string;
-  scenario: Scenario;
-  member_id: string;
-  member_name: string;
-  plan_type: string;
-  plan_name: string;
-  state: string;
-  service_date: string;
-  primary_diagnosis_code: string;
-  primary_diagnosis_description: string;
-  procedure_codes: Array<{ code: string; type: string; description: string; billed_amount?: number }>;
-  total_billed_amount: number;
-  adjudication_status: string;
-  pend_reason_code: string;
-  pend_reason_description: string;
-  clinical_notes: string;
-  clinical_embedding: string | null;
+  record_id: string;
+  scenario: string;
+  record_text: string;
+  record_embedding?: string; // serialized as "<vector:N dims>" from backend
+  processing_status: string;
   embedding_model?: string;
   embedding_generated_at?: string | null;
-  ai_rationale?: string | null;
+  ai_output?: string | null;
   ai_determination?: string | null;
-  ai_rationale_generated_at?: string | null;
-  ai_supporting_policies?: string[];
-  ai_comparable_cases?: string[];
-  status_history?: Array<{ status: string; timestamp: string; note: string }>;
-  [key: string]: unknown;
+  ai_output_generated_at?: string | null;
+  ai_supporting_kb_ids?: string[];
+  ai_comparable_record_ids?: string[];
+  [key: string]: unknown; // domain-specific fields pass through
 }
 
 export interface EmbeddingResult {
   status: string;
-  claim_id: string;
+  record_id: string;
   embedding_model: string;
   embedding_dimensions: number;
   embedding_preview: number[];
@@ -42,47 +29,37 @@ export interface EmbeddingResult {
   message: string;
 }
 
-export interface PolicyResult {
-  policy_id: string;
+export interface KnowledgeItem {
+  kb_id: string;
   title: string;
-  clinical_area: string;
-  subcategory: string;
-  criteria_text: string;
+  category: string;
+  subcategory?: string;
+  content_text: string;
   vector_score?: number;
+  [key: string]: unknown;
 }
 
-export interface PriorClaimResult {
-  claim_id: string;
-  plan_type: string;
-  state: string;
-  service_date: string;
-  primary_diagnosis_description: string;
-  adjudication_outcome: string;
-  outcome_rationale: string;
-  clinical_note: string;
+export interface HistoricalRecord {
+  record_id: string;
+  category: string;
+  outcome: string;
+  outcome_rationale?: string;
+  source_text?: string;
   vector_score?: number;
+  [key: string]: unknown;
 }
 
-export interface SearchResult {
-  query_filters_applied: {
-    plan_type?: string;
-    state?: string;
-    clinical_area?: string;
-    adjudication_outcome?: string;
-  };
-  policies: PolicyResult[];
-  prior_claims: PriorClaimResult[];
-  meta: {
-    policy_count: number;
-    prior_claim_count: number;
-    embedding_model: string;
-  };
+export interface SearchResults {
+  knowledge_base: KnowledgeItem[];
+  historical_records: HistoricalRecord[];
+  query_filters_applied: Record<string, string | null>;
+  meta: Record<string, string | number>;
 }
 
-export interface RationaleResult {
-  rationale: string;
+export interface OutputResult {
+  output: string;
   determination: string;
-  supporting_policy_ids: string[];
-  comparable_case_ids: string[];
-  updated_claim: ClaimRecord;
+  supporting_kb_ids: string[];
+  comparable_record_ids: string[];
+  updated_record: DemoRecord;
 }

@@ -1,13 +1,12 @@
-import type { ClaimRecord } from "../types";
+import type { DemoRecord } from "../types";
 
 export interface SearchFilters {
-  planType: string;
-  state: string;
+  category: string;
   outcome: string;
 }
 
 interface Props {
-  claim: ClaimRecord;
+  record: DemoRecord;
   filters: SearchFilters;
   onFiltersChange: (f: SearchFilters) => void;
   loading: boolean;
@@ -15,14 +14,13 @@ interface Props {
   alreadyDone: boolean;
 }
 
-export default function SearchStep({ claim, filters, onFiltersChange, loading, onSearch, alreadyDone }: Props) {
-  const { planType, state, outcome } = filters;
+export default function SearchStep({ record, filters, onFiltersChange, loading, onSearch, alreadyDone }: Props) {
+  const { category, outcome } = filters;
 
   function handleSearch() {
     onSearch({
-      plan_type: planType || undefined,
-      state: state || undefined,
-      adjudication_outcome: outcome || undefined,
+      category: category || undefined,
+      outcome: outcome || undefined,
     });
   }
 
@@ -72,7 +70,7 @@ export default function SearchStep({ claim, filters, onFiltersChange, loading, o
 
       <div style={{ padding: "14px 18px" }}>
         <p style={{ fontSize: 12, color: "var(--mdb-text-dim)", marginBottom: 12, lineHeight: 1.6 }}>
-          Atlas Vector Search finds semantically relevant policies and prior cases
+          Atlas Vector Search finds semantically relevant knowledge base items and historical records
           while honoring the filters below as hard constraints — not hints.
         </p>
 
@@ -80,44 +78,28 @@ export default function SearchStep({ claim, filters, onFiltersChange, loading, o
         <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginBottom: 14, alignItems: "flex-end" }}>
           <div>
             <label style={{ display: "block", fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>
-              plan_type
+              category
             </label>
             <select
-              value={planType}
-              onChange={(e) => onFiltersChange({ ...filters, planType: e.target.value })}
+              value={category}
+              onChange={(e) => onFiltersChange({ ...filters, category: e.target.value })}
               style={filterStyle}
             >
               <option value="">Any</option>
-              <option value="PPO">PPO</option>
-              <option value="HMO">HMO</option>
-              <option value="Medicare Advantage">Medicare Advantage</option>
+              {/* TODO: Replace these options with domain-specific categories */}
+              <option value="general">General</option>
             </select>
           </div>
           <div>
             <label style={{ display: "block", fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>
-              state
-            </label>
-            <select
-              value={state}
-              onChange={(e) => onFiltersChange({ ...filters, state: e.target.value })}
-              style={filterStyle}
-            >
-              <option value="">Any</option>
-              {["OH","TX","FL","IN","KY","TN","GA","NC","MI","WI","MN","IL","PA","NJ","WA","AZ","CO","CA","NY"].map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label style={{ display: "block", fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>
-              adjudication_outcome (prior claims)
+              outcome (historical records)
             </label>
             <select
               value={outcome}
               onChange={(e) => onFiltersChange({ ...filters, outcome: e.target.value })}
               style={filterStyle}
             >
-              <option value="">Any (approved + denied)</option>
+              <option value="">Any</option>
               <option value="APPROVED">APPROVED only</option>
               <option value="DENIED">DENIED only</option>
             </select>
@@ -146,12 +128,10 @@ export default function SearchStep({ claim, filters, onFiltersChange, loading, o
           color: "var(--mdb-text-dim)",
         }}>
           <code style={{ color: "var(--mdb-green)" }}>$vectorSearch</code>
-          {" — numCandidates: 80, limit: 3 (policies), limit: 3 (prior claims), "}
-          filter: {"{ plan_type: "}
-          <code style={{ color: "var(--mdb-text)" }}>"{planType || "any"}"</code>
-          {", state: "}
-          <code style={{ color: "var(--mdb-text)" }}>"{state || "any"}"</code>
-          {", adjudication_outcome: "}
+          {" — numCandidates: 80, limit: 3 (knowledge_base), limit: 3 (historical_records), "}
+          filter: {"{ category: "}
+          <code style={{ color: "var(--mdb-text)" }}>"{category || "any"}"</code>
+          {", outcome: "}
           <code style={{ color: "var(--mdb-text)" }}>"{outcome || "any"}"</code>
           {" }"}
         </div>

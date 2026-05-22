@@ -1,4 +1,4 @@
-import type { ClaimRecord, EmbeddingResult, SearchResult, RationaleResult, PolicyResult, PriorClaimResult } from "./types";
+import type { DemoRecord, EmbeddingResult, SearchResults, OutputResult, KnowledgeItem, HistoricalRecord } from "./types";
 
 const BASE = "/api";
 
@@ -15,32 +15,32 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  getClaim: (scenario: string) =>
-    request<ClaimRecord>(`/claims/${scenario}/record`),
+  getRecord: (scenario: string) =>
+    request<DemoRecord>(`/records/${scenario}/record`),
 
   generateEmbedding: (scenario: string) =>
-    request<EmbeddingResult>(`/claims/${scenario}/embed`, { method: "POST" }),
+    request<EmbeddingResult>(`/records/${scenario}/embed`, { method: "POST" }),
 
   runSearch: (scenario: string, filters: Record<string, string | undefined>) =>
-    request<SearchResult>(`/search/${scenario}`, {
+    request<SearchResults>(`/search/${scenario}`, {
       method: "POST",
       body: JSON.stringify({ filters }),
     }),
 
   softResetAll: () =>
-    request<{ status: string; claims_reset: { claim_id: string; scenario: string; embedding_preserved: boolean }[]; message: string }>(
-      `/claims/reset-all`,
+    request<{ status: string; records_reset: { record_id: string; scenario: string; embedding_preserved: boolean }[]; message: string }>(
+      `/records/reset-all`,
       { method: "POST" }
     ),
 
-  generateRationale: (
+  generateOutput: (
     scenario: string,
-    policies: PolicyResult[],
-    prior_claims: PriorClaimResult[]
+    knowledge_items: KnowledgeItem[],
+    historical_records: HistoricalRecord[]
   ) =>
-    request<RationaleResult>(`/claims/${scenario}/rationale`, {
+    request<OutputResult>(`/records/${scenario}/output`, {
       method: "POST",
-      body: JSON.stringify({ policies, prior_claims }),
+      body: JSON.stringify({ knowledge_items, historical_records }),
     }),
 
   fetchDoc: (name: "readme" | "runbook" | "script") =>

@@ -7,12 +7,12 @@ sys.path.insert(0, os.path.dirname(__file__))
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
-from routers.claims import router as claims_router
+from routers.records import router as records_router
 from routers.search import router as search_router
 from routers.docs import router as docs_router
 
 app = FastAPI(
-    title="Healthcare Claims AI Demo",
+    title=settings.demo_name,
     description=(
         "MongoDB Atlas + Voyage AI + Atlas Vector Search — "
         "operational record, embeddings, retrieval, and AI output in one platform."
@@ -28,7 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(claims_router)
+app.include_router(records_router)
 app.include_router(search_router)
 app.include_router(docs_router)
 

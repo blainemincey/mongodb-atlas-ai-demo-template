@@ -10,7 +10,8 @@ _ENV_FILE = next((str(p) for p in _ENV_PATHS if p.exists()), ".env")
 
 class Settings(BaseSettings):
     mongodb_uri: str
-    db_name: str = "healthcare_demo"
+    db_name: str = "demo_db"
+    demo_name: str = "Atlas AI Demo"
     voyage_api_key: str
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000

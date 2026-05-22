@@ -1,4 +1,4 @@
-import type { ClaimRecord, RationaleResult } from "../types";
+import type { DemoRecord, OutputResult } from "../types";
 
 function Pill({ label, value, highlight = false }: {
   label: string; value: React.ReactNode; highlight?: boolean;
@@ -32,20 +32,20 @@ function Pill({ label, value, highlight = false }: {
 
 function StatusBadge({ status }: { status: string }) {
   const cls =
-    status === "PENDED" ? "badge-pended" :
+    status === "PENDING" ? "badge-pended" :
     status === "READY_FOR_REVIEW" ? "badge-ready" :
     status === "APPROVED" ? "badge-approved" : "badge-info";
   return <span className={`badge ${cls}`}>{status.replace(/_/g, " ")}</span>;
 }
 
 interface Props {
-  claim: ClaimRecord;
-  rationale: RationaleResult | null;
+  record: DemoRecord;
+  output: OutputResult | null;
 }
 
-export default function ClaimSummaryBar({ claim, rationale }: Props) {
-  const current = rationale ? rationale.updated_claim : claim;
-  const updated = !!rationale;
+export default function RecordSummaryBar({ record, output }: Props) {
+  const current = output ? output.updated_record : record;
+  const updated = !!output;
 
   return (
     <div
@@ -65,13 +65,10 @@ export default function ClaimSummaryBar({ claim, rationale }: Props) {
       {/* Identity */}
       <div style={{ display: "flex", flexDirection: "column", gap: 1, marginRight: 4 }}>
         <span style={{ fontSize: 11, color: "var(--mdb-text-dim)" }}>
-          {current.claim_id}
+          {current.record_id}
         </span>
         <span style={{ fontSize: 13, fontWeight: 600, color: "var(--mdb-text)", whiteSpace: "nowrap" }}>
-          {current.member_name}
-        </span>
-        <span style={{ fontSize: 11, color: "var(--mdb-text-dim)" }}>
-          {current.plan_type} · {current.state}
+          Scenario {current.scenario}
         </span>
       </div>
 
@@ -79,11 +76,10 @@ export default function ClaimSummaryBar({ claim, rationale }: Props) {
 
       {/* Key indicators */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", flex: 1 }}>
-        <Pill label="pend_reason" value={current.pend_reason_code} />
         <Pill
-          label="clinical_embedding"
-          value={current.clinical_embedding ? "stored · 1024 dims" : "null"}
-          highlight={!!current.clinical_embedding}
+          label="record_embedding"
+          value={current.record_embedding ? "stored · 1024 dims" : "null"}
+          highlight={!!current.record_embedding}
         />
         {current.ai_determination && (
           <Pill label="ai_determination" value={current.ai_determination} highlight />
@@ -99,9 +95,9 @@ export default function ClaimSummaryBar({ claim, rationale }: Props) {
         gap: 3,
       }}>
         <span style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.07em" }}>
-          adjudication_status
+          processing_status
         </span>
-        <StatusBadge status={current.adjudication_status} />
+        <StatusBadge status={current.processing_status} />
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ Vector search endpoints.
 
 from fastapi import APIRouter, HTTPException
 from db import get_db
-from services.vector_search import search_policies, search_prior_claims
+from services.vector_search import search_knowledge_base, search_historical_records
 
 router = APIRouter(prefix="/api/search", tags=["search"])
 
@@ -12,85 +12,67 @@ router = APIRouter(prefix="/api/search", tags=["search"])
 @router.post("/{scenario}")
 def run_vector_search(scenario: str, body: dict):
     """
-    Run Atlas Vector Search for the pended claim.
+    Run Atlas Vector Search for the given demo record scenario.
 
-    Accepts optional MQL filters: plan_type, state, clinical_area,
-    adjudication_outcome. Combines semantic relevance with hard filters.
+    Accepts optional MQL filters: category, subcategory (for knowledge_base)
+    and category, outcome (for historical_records). Combines semantic
+    relevance with hard filters.
     """
-    if scenario not in ("A", "B", "C"):
-        raise HTTPException(status_code=400, detail="scenario must be A, B, or C")
-
     db = get_db()
-    claim = db.claims.find_one({"scenario": scenario, "demo_claim": True})
-    if not claim:
-        raise HTTPException(status_code=404, detail=f"Demo claim for scenario {scenario} not found.")
+    record = db.records.find_one({"scenario": scenario, "demo_record": True})
+    if not record:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Demo record for scenario {scenario} not found.",
+        )
 
-    embedding = claim.get("clinical_embedding")
+    embedding = record.get("record_embedding")
     if not embedding or isinstance(embedding, str):
         raise HTTPException(
             status_code=400,
-            detail="Claim has no embedding yet. Run /embed first.",
+            detail="Record has no embedding yet. Run /embed first.",
         )
 
     filters = body.get("filters", {})
-    plan_type = filters.get("plan_type") or claim.get("plan_type")
-    state = filters.get("state") or claim.get("state")
-    clinical_area = filters.get("clinical_area")
-    adjudication_outcome = filters.get("adjudication_outcome")
+    category = filters.get("category")
+    subcategory = filters.get("subcategory")
+    outcome = filters.get("outcome")
 
-    # Infer clinical area from claim procedure codes if not provided
-    if not clinical_area:
-        procedure_codes = [p["code"] for p in claim.get("procedure_codes", [])]
-        # HCPCS J codes -> specialty biologic infusion
-        # HCPCS S codes -> pharmacy/obesity drugs (e.g. S0148 semaglutide)
-        # CPT 7xxxx -> diagnostic imaging
-        if any(c.startswith("J") for c in procedure_codes):
-            clinical_area = "biologic"
-        elif any(c.startswith("S") for c in procedure_codes):
-            clinical_area = "obesity"
-        else:
-            clinical_area = "imaging"
+    n_kb = filters.get("n_knowledge_base", 3)
+    n_hist = filters.get("n_historical_records", 3)
 
-    n_policies = filters.get("n_policies", 3)
-    n_prior_claims = filters.get("n_prior_claims", 3)
-
-    # Use the stored embedding as the query vector — no extra Voyage API call.
-    # The embedding was already generated and stored in Step 2; reusing it here
-    # keeps search deterministic and eliminates per-search rate-limit risk.
+    # Reuse the stored embedding as query vector — no extra Voyage API call.
     query_vector = embedding
 
-    policy_results = search_policies(
-        db.policies,
+    kb_results = search_knowledge_base(
+        db.knowledge_base,
         query_vector,
-        limit=n_policies,
-        plan_type=plan_type,
-        clinical_area=clinical_area,
+        limit=n_kb,
+        category=category,
+        subcategory=subcategory,
     )
 
-    prior_claim_results = search_prior_claims(
-        db.prior_claims,
+    hist_results = search_historical_records(
+        db.historical_records,
         query_vector,
-        limit=n_prior_claims,
-        plan_type=plan_type,
-        state=state,
-        clinical_area=clinical_area,
-        adjudication_outcome=adjudication_outcome if adjudication_outcome else None,
+        limit=n_hist,
+        category=category,
+        outcome=outcome,
     )
 
     return {
         "query_filters_applied": {
-            "plan_type": plan_type,
-            "state": state,
-            "clinical_area": clinical_area,
-            "adjudication_outcome": adjudication_outcome,
+            "category": category,
+            "subcategory": subcategory,
+            "outcome": outcome,
         },
-        "policies": policy_results,
-        "prior_claims": prior_claim_results,
+        "knowledge_base": kb_results,
+        "historical_records": hist_results,
         "meta": {
-            "policy_count": len(policy_results),
-            "prior_claim_count": len(prior_claim_results),
+            "knowledge_base_count": len(kb_results),
+            "historical_records_count": len(hist_results),
             "embedding_model": "voyage-3",
-            "search_index_policies": "policy_vector_index",
-            "search_index_prior_claims": "prior_claims_vector_index",
+            "search_index_knowledge_base": "kb_vector_index",
+            "search_index_historical_records": "historical_vector_index",
         },
     }

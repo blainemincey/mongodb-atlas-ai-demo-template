@@ -1,150 +1,103 @@
-# Demo Script — MongoDB Atlas Healthcare AI Demo
-## Spoken Narration for Live Webcast
+# Demo Script — Atlas AI Demo
+
+[TODO: Replace this file with domain-specific talking points before presenting.]
 
 ---
 
-### RECOMMENDED OPENING (use close to verbatim)
+## Opening (1–2 min)
 
-> "Humana already relies on MongoDB for mission-critical systems. The next question is whether AI at Humana will require another data layer — or whether the same platform can serve as both the operational system and the retrieval foundation for AI workloads. Today we are going to walk one synthetic pended healthcare claim through that architecture end to end, using Voyage embeddings and Atlas Vector Search inside the same platform."
+[TODO: Describe the domain problem this demo addresses. What kind of records
+are being processed? What is the business question being answered?]
 
----
-
-### [BEFORE CLICKING ANYTHING] — Architecture framing (30 sec)
-
-> "What you're looking at is a live connection to a MongoDB Atlas cluster. This is the same kind of cluster an engineering team at a payer like Humana would run for operational systems — claims adjudication, member records, authorization workflows. The question we're answering today is: does AI enrichment force that data to leave this platform, or can the platform do both jobs?"
-
-> "We have three demo scenarios loaded. Scenario A is a prior authorization request for an MRI — a lumbar spine study that's been pended for medical-necessity review. Scenario B is a high-cost biologic infusion claim — infliximab for rheumatoid arthritis — pended because it triggered the plan's high-cost drug threshold. Scenario C is a GLP-1 weight management drug — semaglutide — pended for a lifestyle program documentation gap. Same architecture, three very different clinical situations."
+Example framing:
+> "Today I'll show how MongoDB Atlas handles [domain] records end-to-end —
+> from ingestion through AI-assisted output — without stitching together
+> separate vector stores, caches, or AI pipelines."
 
 ---
 
-### STEP 1 — Operational Record
+## Step 1 — Load Record (~1 min)
 
-**[Click Scenario A or B]**
+**What to say:**
+> "Here's a [domain] record stored in MongoDB. It has [domain-specific fields]
+> and an unstructured text field — `record_text` — that captures the key context.
+> The embedding field is currently null."
 
-> "This is the pended claim as it actually lives in MongoDB. Notice what's here: a realistic member ID, an NPI, ICD-10 and CPT codes you'd see in a real adjudication system, place-of-service codes, pend reason codes — and right alongside all of that structured data, unstructured clinical notes. The utilization management nurse's review, the treatment history, the clinical findings."
+[TODO: Point out specific fields in the record that make this scenario interesting.]
 
-> "This is the kind of document the engineering teams actually own. Structured and unstructured data already live together in one place. The question is whether AI enrichment forces this record to leave the platform."
-
-> "Notice the `clinical_embedding` field is null. The `ai_rationale` field is null. That's the state of this claim right now: pended, waiting for a reviewer. We're going to walk it through the whole loop."
-
----
-
-### STEP 2 — Voyage Embeddings
-
-**[Click "Generate Embedding"]**
-
-> "Atlas is now generating a Voyage AI embedding for these clinical notes. The model is voyage-3 — Voyage AI's general-purpose embedding model, 1,024 dimensions. What I want you to notice is what just happened: that vector was written directly into the same MongoDB document. The embedding now lives in the same record as the member ID, the diagnosis codes, and the clinical notes."
-
-> "There's no separate vector store. No pipeline that extracts text, ships it to a different system, and tries to keep things in sync. If a reviewer edits the clinical notes tomorrow and the embedding needs to be regenerated — that's one write to one document, in one platform."
-
-> "Let me put a name on what that alternative looks like. In a typical AI pipeline, you have your operational database here, a text extraction step here, an embedding model call here, a vector store here, and then retrieval that has to be reconciled back to the operational record. That's what I'd call the synchronization tax — glue code, drift risk, a whole category of operational complexity that exists solely to move data between systems. The Atlas architecture I'm showing you today eliminates that category."
-
-> "You can see the vector preview — the first 8 of 1,024 floating-point values. This is the semantic fingerprint of the clinical notes, living in the same place as the note itself."
+**Talking points:**
+- This is a real operational document, not a separate AI input file
+- All domain-specific fields live alongside the fields we're about to add
 
 ---
 
-### STEP 3 — Atlas Vector Search
+## Step 2 — Embed (~1 min)
 
-**[Review filters and click "Run Vector Search"]**
+**What to say:**
+> "We send `record_text` to Voyage AI. The resulting 1024-dimensional vector
+> is written back into the same document. No separate vector database — the
+> embedding lives next to the operational data."
 
-> "Now this is where it gets interesting. We're about to query by meaning — not by keyword, not by an exact code match — by the semantic content of this clinical situation. But look at these filter controls."
-
-> "We have hard filters for plan type and state. These aren't hints to the semantic model. These are enforced constraints. Atlas Vector Search finds the most semantically relevant documents first, then applies the filter — so we get PPO-Ohio policies, not all policies globally."
-
-> "That's the difference between useful search and dangerous search in a healthcare context. Unguarded semantic search in UM would be a compliance problem. Healthcare teams need semantic relevance plus hard operational guardrails — that's exactly what Atlas Vector Search delivers. One engine, both capabilities."
-
----
-
-### STEP 4 — Retrieved Context
-
-**[Pause on results]**
-
-> "Look at what came back. The top policy match is the specific medical necessity criteria for this procedure — those are not random. Atlas Vector Search found them because the clinical language in this claim semantically aligns with the language in those policies."
-
-> "And the prior claims include an almost identical approved case — same diagnosis, same plan type, same state — plus contrast cases that show what a denial looks like under different clinical circumstances."
-
-**[Point at green ✓ filter pills on each card]**
-
-> "The green checkmarks on each card tell you exactly which fields matched the filters you set. You can see at a glance that these results are from the same plan type and state — that's not coincidence, that's Atlas Vector Search enforcing your constraints before returning results."
-
-**[Point at the blue auto-scoped badge in the section header]**
-
-> "The blue badge shows a filter the system set automatically. It inferred from the procedure code that this is an [imaging / biologic / obesity] claim and scoped the search to that clinical domain. That's why you're seeing the right policies and not results from a completely different part of the formulary."
-
-> "The value here is not that AI generated words. The value is that Atlas Vector Search found the right context. The rationale we're about to generate is only as good as what it gets to work with. The retrieval architecture is the foundation. If that's wrong, the output is wrong, and no amount of prompt engineering fixes a bad retrieval layer."
+**Talking points:**
+- Show the `record_embedding: <vector: 1024 dims>` field appear in the record
+- Emphasize: one document, one collection, everything co-located
 
 ---
 
-### STEP 5 — Rationale + Write-back
+## Step 3 — Vector Search (~2 min)
 
-**[Click "Generate Rationale"]**
+**What to say:**
+> "Atlas Vector Search uses the stored embedding as a query vector. We get
+> semantically relevant [knowledge base items] and [historical records] back —
+> ranked by cosine similarity."
 
-> "The backend is now assembling a reviewer-voice recommendation grounded in what Atlas Vector Search just retrieved — the actual policy criteria text and the outcome rationales from those prior cases. No additional API call. The retrieved context is the input."
+[TODO: Explain what the filters mean in your domain context.]
 
-**[As rationale appears]**
-
-> "Read the determination section. It references the specific clinical findings from this chart. It names the policy ID and the specific criterion. It references the prior claim IDs as analogs."
-
-> "That's what grounded means. This output can't cite a policy that doesn't exist, because the policies we retrieved are right there as the source. The citations are real."
-
-**[As claim record updates]**
-
-> "And now watch the claim record at the top of the page. The `adjudication_status` just changed from `PENDED` to `READY_FOR_REVIEW`. The `ai_rationale` field is populated. The `ai_supporting_policies` and `ai_comparable_cases` arrays are written. The `status_history` has a new entry. This is not a separate result panel. This is the same MongoDB document we started with, updated in place."
-
-> "MongoDB is not just storing the source data here. It is anchoring the embeddings, the retrieval results, and the generated AI output in the same operational context. One document, one platform, one place for engineering to reason about what happened."
+**Talking points:**
+- The `$vectorSearch` stage runs inside the aggregation pipeline — no round trip
+  to a separate service
+- Optional hard filters (category, outcome) narrow the result set before ranking
+- The query vector is the stored embedding — no second Voyage API call
 
 ---
 
-### [ARCHITECTURE INTERLUDE — natural, woven into the flow]
+## Step 4 — Retrieved Context (~1 min)
 
-*After the write-back lands, address the architectural question before moving on:*
+**What to say:**
+> "These are the top matches. Notice the similarity scores — [explain what high/
+> low scores mean for your domain]."
 
-> "A question I'd expect from an engineering audience: does running vector search on the same cluster impact transactional performance? The honest answer is it can if you don't isolate the workloads."
-
-> "Atlas addresses this with Search Nodes — dedicated infrastructure for vector search workloads that scale independently from the core database nodes. Your OLTP cluster keeps handling operational writes without competing for resources with embedding queries. You get workload isolation without breaking the architectural simplicity — without adding another system. That's the pattern: one cluster, separated workloads, no new operational surface area."
-
----
-
-### RECOMMENDED CLOSE (use close to verbatim)
-
-**[Show the updated claim document, both field sections visible]**
-
-> "If this pattern holds, the takeaway is simple: MongoDB is not just where Humana stores operational data. It is a practical way to keep operational data, embeddings, retrieval, and AI output close together in one architecture that engineering teams can reason about, scale, and standardize."
-
-> "We started with a pended claim. The clinical notes became a Voyage embedding, stored in the same document. Atlas Vector Search retrieved the right policies and prior analogs using semantic similarity with hard metadata filters. The backend assembled a grounded, reviewer-voice recommendation directly from that retrieved context. And that recommendation was written back into the original record — status updated, rationale stored, audit trail intact — without the data ever leaving the platform."
-
-> "That's the architecture. One platform. Fewer moving parts."
+[TODO: Point out the most interesting retrieved items for each scenario and
+explain why they're relevant.]
 
 ---
 
----
+## Step 5 — Generate Output + Write-back (~2 min)
 
-### Scenario C key talking points (GLP-1 / semaglutide)
+**What to say:**
+> "The output is assembled from the retrieved context and written back to the
+> original record. Watch `processing_status` change and the AI output fields
+> appear — all in the same document."
 
-**[Select Scenario C and run through Steps 1–5]**
-
-> "This is the fastest-growing category of prior auth volume right now — GLP-1 weight management drugs. The member clearly qualifies clinically: BMI 38, three comorbidities, two prior medication failures. But there's a specific documentation gap: the plan requires a formal six-month medically supervised program, and the notes don't show one."
-
-**[Step 4 — point at Prior #1 `PCL-2024-GLP1-1456`]**
-
-> "The top prior claim is an approved case with nearly identical clinical facts — same BMI range, same comorbidities, same state and plan type — but with a complete six-month Tampa General program on file. That's the context the reviewer needs to understand exactly what documentation would move this case to approval."
-
-**[Step 4 — point at Prior #2 `PCL-2024-GLP1-0312`]**
-
-> "And here's a denial case with the same drug and same diagnosis code, but BMI 28.9 — below the coverage threshold. Same procedure, different outcome, different clinical facts. The vector search surfaced both because both are semantically relevant to this claim."
+**Talking points:**
+- Operational data, embeddings, retrieval results, and AI output: one platform
+- The write-back is a standard MongoDB `update_one` — no external storage
 
 ---
 
-### Talking points if audience asks follow-up questions
+## Closing (~1 min)
 
-**"Is this production-ready or a demo?"**
-> "The architecture pattern is production-grade. What you're seeing is a working demo on a real Atlas cluster with real Voyage embeddings and real Vector Search. The demo data is synthetic, but the plumbing is what you'd actually build."
+[TODO: Summarize the business value for your specific audience.]
 
-**"How does this scale?"**
-> "The operational cluster and the vector search nodes scale independently on Atlas. You're not choosing between operational performance and search performance — you provision both to match your load."
+> "MongoDB Atlas handled every step: storage, vector indexing, semantic search,
+> and AI output persistence. [Domain-specific value statement.]"
 
-**"What about data governance and HIPAA?"**
-> "MongoDB Atlas has HIPAA-eligible configurations. Everything in this demo stays in your Atlas cluster — no PHI leaves the environment. The AI call is the one boundary to design around, and that can be a private endpoint or an on-prem model depending on your compliance posture."
+---
 
-**"Could we use a different embedding model?"**
-> "Yes. The embedding dimension and model are configuration. Voyage-3 is a strong general-purpose model for clinical text. If you have domain-specific requirements, the architecture is the same — swap the model, rebuild the embeddings, the Vector Search index adapts."
+## Scenario variations
+
+| Scenario | [TODO: Name] | [TODO: What it demonstrates] |
+|----------|-------------|-------------------------------|
+| A        | [TODO]      | [TODO]                        |
+| B        | [TODO]      | [TODO]                        |
+| C        | [TODO]      | [TODO]                        |

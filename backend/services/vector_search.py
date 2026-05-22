@@ -2,43 +2,44 @@
 Atlas Vector Search queries.
 
 Uses the $vectorSearch aggregation stage with optional MQL pre-filters.
-Filters enforce hard operational constraints (plan_type, state, etc.)
-on top of semantic similarity — not unguarded semantic search.
+Filters enforce hard operational constraints on top of semantic similarity.
 """
 
 from typing import Optional, List
 from pymongo.collection import Collection
 
 
-POLICIES_INDEX = "policy_vector_index"
-PRIOR_CLAIMS_INDEX = "prior_claims_vector_index"
+KB_INDEX = "kb_vector_index"
+HIST_INDEX = "historical_vector_index"
 
 # Number of candidates Atlas Vector Search will consider before returning limit
 NUM_CANDIDATES = 80
 
 
-def search_policies(
+def search_knowledge_base(
     collection: Collection,
     query_vector: List[float],
     limit: int = 3,
-    plan_type: Optional[str] = None,
-    clinical_area: Optional[str] = None,
+    category: Optional[str] = None,
+    subcategory: Optional[str] = None,
 ) -> List[dict]:
     """
-    Search the policies collection by semantic similarity.
-    Optional pre-filters on plan_applicability / clinical_area.
+    Search the knowledge_base collection by semantic similarity.
+    Optional pre-filters on category / subcategory.
     """
     vector_search_stage: dict = {
-        "index": POLICIES_INDEX,
-        "path": "clinical_embedding",
+        "index": KB_INDEX,
+        "path": "record_embedding",
         "queryVector": query_vector,
         "numCandidates": NUM_CANDIDATES,
         "limit": limit,
     }
 
     filter_clauses = {}
-    if clinical_area:
-        filter_clauses["clinical_area"] = {"$eq": clinical_area}
+    if category:
+        filter_clauses["category"] = {"$eq": category}
+    if subcategory:
+        filter_clauses["subcategory"] = {"$eq": subcategory}
 
     if filter_clauses:
         vector_search_stage["filter"] = filter_clauses
@@ -48,14 +49,11 @@ def search_policies(
         {
             "$project": {
                 "_id": 0,
-                "policy_id": 1,
+                "kb_id": 1,
                 "title": 1,
-                "clinical_area": 1,
+                "category": 1,
                 "subcategory": 1,
-                "plan_applicability": 1,
-                "cpt_codes": 1,
-                "hcpcs_codes": 1,
-                "criteria_text": 1,
+                "content_text": 1,
                 "vector_score": {"$meta": "vectorSearchScore"},
             }
         },
@@ -64,36 +62,30 @@ def search_policies(
     return list(collection.aggregate(pipeline))
 
 
-def search_prior_claims(
+def search_historical_records(
     collection: Collection,
     query_vector: List[float],
     limit: int = 3,
-    plan_type: Optional[str] = None,
-    state: Optional[str] = None,
-    clinical_area: Optional[str] = None,
-    adjudication_outcome: Optional[str] = None,
+    category: Optional[str] = None,
+    outcome: Optional[str] = None,
 ) -> List[dict]:
     """
-    Search the prior_claims collection by semantic similarity with metadata filters.
-    Filters combine semantic relevance with hard operational constraints.
+    Search the historical_records collection by semantic similarity.
+    Optional pre-filters on category / outcome.
     """
     vector_search_stage: dict = {
-        "index": PRIOR_CLAIMS_INDEX,
-        "path": "clinical_embedding",
+        "index": HIST_INDEX,
+        "path": "record_embedding",
         "queryVector": query_vector,
         "numCandidates": NUM_CANDIDATES,
         "limit": limit,
     }
 
     filter_clauses = {}
-    if plan_type:
-        filter_clauses["plan_type"] = {"$eq": plan_type}
-    if state:
-        filter_clauses["state"] = {"$eq": state}
-    if clinical_area:
-        filter_clauses["clinical_area"] = {"$eq": clinical_area}
-    if adjudication_outcome:
-        filter_clauses["adjudication_outcome"] = {"$eq": adjudication_outcome}
+    if category:
+        filter_clauses["category"] = {"$eq": category}
+    if outcome:
+        filter_clauses["outcome"] = {"$eq": outcome}
 
     if filter_clauses:
         vector_search_stage["filter"] = filter_clauses
@@ -103,19 +95,11 @@ def search_prior_claims(
         {
             "$project": {
                 "_id": 0,
-                "claim_id": 1,
-                "member_id": 1,
-                "plan_type": 1,
-                "state": 1,
-                "service_date": 1,
-                "clinical_area": 1,
-                "primary_diagnosis_code": 1,
-                "primary_diagnosis_description": 1,
-                "procedure_codes": 1,
-                "billed_amount": 1,
-                "adjudication_outcome": 1,
+                "record_id": 1,
+                "category": 1,
+                "outcome": 1,
                 "outcome_rationale": 1,
-                "clinical_note": 1,
+                "source_text": 1,
                 "vector_score": {"$meta": "vectorSearchScore"},
             }
         },

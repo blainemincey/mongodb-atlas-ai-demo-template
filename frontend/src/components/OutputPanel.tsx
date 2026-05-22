@@ -1,7 +1,7 @@
-import type { RationaleResult } from "../types";
+import type { OutputResult } from "../types";
 
 interface Props {
-  result: RationaleResult | null;
+  result: OutputResult | null;
   loading: boolean;
   onGenerate: () => void;
 }
@@ -12,7 +12,7 @@ function determinationColor(det: string) {
   return "var(--mdb-warn)";
 }
 
-export default function RationalePanel({ result, loading, onGenerate }: Props) {
+export default function OutputPanel({ result, loading, onGenerate }: Props) {
   return (
     <section style={{
       background: "var(--mdb-slate)",
@@ -40,9 +40,9 @@ export default function RationalePanel({ result, loading, onGenerate }: Props) {
           }}>
             {result ? "✓" : "5"}
           </span>
-          <span style={{ fontWeight: 600, fontSize: 13 }}>AI Rationale + Write-back</span>
+          <span style={{ fontWeight: 600, fontSize: 13 }}>AI Output + Write-back</span>
           <span style={{ fontSize: 11, color: "var(--mdb-text-dim)" }}>
-            Template generates · MongoDB stores · claim updates in place
+            Template generates · MongoDB stores · record updates in place
           </span>
         </div>
         <button
@@ -56,17 +56,17 @@ export default function RationalePanel({ result, loading, onGenerate }: Props) {
               <span className="spinner" style={{ width: 14, height: 14 }} />
               Generating...
             </span>
-          ) : result ? "Regenerate" : "Generate Rationale"}
+          ) : result ? "Regenerate" : "Generate Output"}
         </button>
       </div>
 
       <div style={{ padding: "14px 18px" }}>
         {!result && !loading && (
           <p style={{ color: "var(--mdb-text-dim)", fontSize: 13, lineHeight: 1.6 }}>
-            Click <strong style={{ color: "var(--mdb-text)" }}>Generate Rationale</strong> to assemble a structured
-            reviewer-voice recommendation grounded in the retrieved policy criteria and prior case analogues,
-            then write it back into the same claim record.
-            Watch the claim document above update in place — adjudication status, rationale, and timestamp
+            Click <strong style={{ color: "var(--mdb-text)" }}>Generate Output</strong> to assemble
+            a structured AI output grounded in the retrieved knowledge base items and historical records,
+            then write it back into the same record document.
+            Watch the record above update in place — processing status, AI output, and timestamp
             all written to the same MongoDB document that held the operational data.
           </p>
         )}
@@ -74,7 +74,7 @@ export default function RationalePanel({ result, loading, onGenerate }: Props) {
         {loading && (
           <p style={{ color: "var(--mdb-text-dim)", fontSize: 13, display: "flex", alignItems: "center", gap: 8 }}>
             <span className="spinner" />
-            Assembling grounded rationale from retrieved context · writing back to MongoDB...
+            Assembling output from retrieved context · writing back to MongoDB...
           </p>
         )}
 
@@ -90,7 +90,7 @@ export default function RationalePanel({ result, loading, onGenerate }: Props) {
               border: "1px solid var(--mdb-border)",
               borderRadius: "var(--radius)",
             }}>
-              <span style={{ fontSize: 11, color: "var(--mdb-text-dim)" }}>AI Recommendation:</span>
+              <span style={{ fontSize: 11, color: "var(--mdb-text-dim)" }}>AI Determination:</span>
               <span style={{
                 fontSize: 14,
                 fontWeight: 700,
@@ -99,7 +99,7 @@ export default function RationalePanel({ result, loading, onGenerate }: Props) {
                 {result.determination}
               </span>
               <span style={{ fontSize: 11, color: "var(--mdb-text-dim)", marginLeft: "auto" }}>
-                Draft · Human reviewer attestation required
+                Draft · Human review required
               </span>
             </div>
 
@@ -113,9 +113,9 @@ export default function RationalePanel({ result, loading, onGenerate }: Props) {
                 padding: "8px 12px",
               }}>
                 <div style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>
-                  Supporting Policies Written to Record
+                  Supporting Knowledge Base IDs Written to Record
                 </div>
-                {result.supporting_policy_ids.map((id) => (
+                {result.supporting_kb_ids.map((id) => (
                   <code key={id} style={{ display: "block", fontSize: 12, color: "var(--mdb-green)" }}>{id}</code>
                 ))}
               </div>
@@ -127,18 +127,18 @@ export default function RationalePanel({ result, loading, onGenerate }: Props) {
                 padding: "8px 12px",
               }}>
                 <div style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>
-                  Comparable Cases Written to Record
+                  Comparable Record IDs Written to Record
                 </div>
-                {result.comparable_case_ids.map((id) => (
+                {result.comparable_record_ids.map((id) => (
                   <code key={id} style={{ display: "block", fontSize: 12, color: "var(--mdb-green)" }}>{id}</code>
                 ))}
               </div>
             </div>
 
-            {/* Full rationale text */}
+            {/* Full output text */}
             <div>
               <p style={{ fontSize: 11, color: "var(--mdb-text-dim)", marginBottom: 6 }}>
-                Full rationale (written to <code>claims.ai_rationale</code>):
+                Full output (written to <code>records.ai_output</code>):
               </p>
               <div style={{
                 background: "rgba(0,0,0,0.25)",
@@ -153,7 +153,7 @@ export default function RationalePanel({ result, loading, onGenerate }: Props) {
                 maxHeight: 480,
                 overflowY: "auto",
               }}>
-                {result.rationale}
+                {result.output}
               </div>
             </div>
 
@@ -167,8 +167,8 @@ export default function RationalePanel({ result, loading, onGenerate }: Props) {
               lineHeight: 1.6,
             }}>
               <strong style={{ color: "var(--mdb-green)" }}>Write-back complete.</strong>{" "}
-              The claim record above now reflects: <code style={{ color: "var(--mdb-text)" }}>adjudication_status: READY_FOR_REVIEW</code>,
-              the full rationale text, supporting policy IDs, comparable case IDs, and an updated status history entry —
+              The record above now reflects: <code style={{ color: "var(--mdb-text)" }}>processing_status: READY_FOR_REVIEW</code>,
+              the full AI output, supporting KB IDs, comparable record IDs —
               all written back to the same MongoDB document that holds the operational data.
               Operational data, embeddings, retrieval, and AI output: one platform.
             </div>

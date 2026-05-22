@@ -1,4 +1,4 @@
-import type { ClaimRecord as ClaimType } from "../types";
+import type { DemoRecord } from "../types";
 
 function Field({ label, value, mono = false, highlight = false }: {
   label: string; value: React.ReactNode; mono?: boolean; highlight?: boolean;
@@ -29,20 +29,18 @@ function Field({ label, value, mono = false, highlight = false }: {
 
 function StatusBadge({ status }: { status: string }) {
   const cls =
-    status === "PENDED" ? "badge-pended" :
+    status === "PENDING" ? "badge-pended" :
     status === "READY_FOR_REVIEW" ? "badge-ready" :
     status === "APPROVED" ? "badge-approved" : "badge-info";
   return <span className={`badge ${cls}`}>{status}</span>;
 }
 
 interface Props {
-  claim: ClaimType;
+  record: DemoRecord;
   updated: boolean;
 }
 
-export default function ClaimRecord({ claim, updated }: Props) {
-  const procedures = claim.procedure_codes || [];
-
+export default function RecordCard({ record, updated }: Props) {
   return (
     <section style={{
       background: "var(--mdb-slate)",
@@ -70,7 +68,7 @@ export default function ClaimRecord({ claim, updated }: Props) {
             display: "inline-block",
           }} />
           <span style={{ fontWeight: 600, fontSize: 13 }}>
-            Claim Record
+            Record
           </span>
           <code style={{
             fontSize: 11,
@@ -79,78 +77,46 @@ export default function ClaimRecord({ claim, updated }: Props) {
             padding: "1px 6px",
             borderRadius: 3,
           }}>
-            healthcare_demo.claims
+            demo_db.records
           </code>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <StatusBadge status={claim.adjudication_status} />
+          <StatusBadge status={record.processing_status} />
           <span style={{ fontSize: 11, color: "var(--mdb-text-dim)" }}>
-            {claim.claim_id}
+            {record.record_id}
           </span>
         </div>
       </div>
 
       <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 0 }}>
-        {/* Member + Plan */}
+        {/* Processing status */}
         <p style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
-          Member &amp; Plan
+          Status
         </p>
-        <Field label="member_name" value={claim.member_name} />
-        <Field label="member_id" value={claim.member_id} mono />
-        <Field label="plan_name" value={claim.plan_name} />
-        <Field label="plan_type / state" value={`${claim.plan_type} · ${claim.state}`} />
-
-        {/* Diagnosis */}
-        <p style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, marginTop: 14 }}>
-          Diagnosis
-        </p>
-        <Field label="primary_diagnosis_code" value={claim.primary_diagnosis_code} mono />
-        <Field label="primary_diagnosis_description" value={claim.primary_diagnosis_description} />
-
-        {/* Procedures */}
-        <p style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, marginTop: 14 }}>
-          Procedure Codes
-        </p>
-        {procedures.map((p) => (
-          <Field key={p.code}
-            label={`${p.type} ${p.code}`}
-            value={`${p.description}${p.billed_amount ? ` · $${p.billed_amount.toLocaleString()}` : ""}`}
-          />
-        ))}
-
-        <Field label="total_billed_amount"
-          value={`$${(claim.total_billed_amount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`}
-        />
-
-        {/* Adjudication */}
-        <p style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, marginTop: 14 }}>
-          Adjudication
-        </p>
-        <Field label="adjudication_status" value={<StatusBadge status={claim.adjudication_status} />} />
-        <Field label="pend_reason_code" value={claim.pend_reason_code} mono />
-        <Field label="pend_reason_description" value={claim.pend_reason_description} />
+        <Field label="processing_status" value={<StatusBadge status={record.processing_status} />} />
+        <Field label="scenario" value={record.scenario} mono />
 
         {/* Embedding status */}
         <p style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, marginTop: 14 }}>
           Voyage AI Embedding (stored in this document)
         </p>
-        <Field label="clinical_embedding"
+        <Field label="record_embedding"
           value={
-            claim.clinical_embedding
+            record.record_embedding
               ? <span style={{ color: "var(--mdb-green)" }}>
-                  {claim.clinical_embedding} · model: {claim.embedding_model}
+                  {record.record_embedding} · model: {record.embedding_model}
                 </span>
               : <span style={{ color: "var(--mdb-text-dim)" }}>null — not yet generated</span>
           }
         />
         <Field label="embedding_generated_at"
-          value={claim.embedding_generated_at || "null"}
+          value={record.embedding_generated_at || "null"}
           mono
         />
 
-        {/* Clinical Notes */}
+        {/* Record Text */}
         <p style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, marginTop: 14 }}>
-          Clinical Notes (unstructured — embedded by Voyage AI)
+          Record Text (unstructured — embedded by Voyage AI)
         </p>
         <div style={{
           background: "rgba(0,0,0,0.25)",
@@ -165,35 +131,19 @@ export default function ClaimRecord({ claim, updated }: Props) {
           whiteSpace: "pre-wrap",
           wordBreak: "break-word",
         }}>
-          {claim.clinical_notes}
+          {record.record_text}
         </div>
 
-        {/* AI Rationale (written back) */}
-        {claim.ai_rationale && (
+        {/* AI Output (written back) */}
+        {record.ai_output && (
           <>
             <p style={{ fontSize: 10, color: "var(--mdb-green)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, marginTop: 14, fontWeight: 600 }}>
-              AI-Generated Rationale (written back to this record)
+              AI Output (written back to this record)
             </p>
-            <Field label="ai_determination" value={claim.ai_determination || ""} highlight />
-            <Field label="ai_rationale_generated_at" value={claim.ai_rationale_generated_at || ""} mono />
-            <Field label="ai_supporting_policies" value={(claim.ai_supporting_policies || []).join(", ")} mono highlight />
-            <Field label="ai_comparable_cases" value={(claim.ai_comparable_cases || []).join(", ")} mono highlight />
-          </>
-        )}
-
-        {/* Status history */}
-        {claim.status_history && claim.status_history.length > 0 && (
-          <>
-            <p style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, marginTop: 14 }}>
-              Status History
-            </p>
-            {claim.status_history.map((h, i) => (
-              <Field key={i}
-                label={h.timestamp?.slice(0, 19) || ""}
-                value={`${h.status} — ${h.note}`}
-                highlight={i === claim.status_history!.length - 1 && !!claim.ai_rationale}
-              />
-            ))}
+            <Field label="ai_determination" value={record.ai_determination || ""} highlight />
+            <Field label="ai_output_generated_at" value={record.ai_output_generated_at || ""} mono />
+            <Field label="ai_supporting_kb_ids" value={(record.ai_supporting_kb_ids || []).join(", ")} mono highlight />
+            <Field label="ai_comparable_record_ids" value={(record.ai_comparable_record_ids || []).join(", ")} mono highlight />
           </>
         )}
       </div>
