@@ -1,4 +1,6 @@
+import { useState } from "react";
 import type { DemoRecord } from "../types";
+import StepHelpPanel, { HelpButton, STEP_HELP } from "./StepHelp";
 
 function Field({ label, value, mono = false, highlight = false }: {
   label: string; value: React.ReactNode; mono?: boolean; highlight?: boolean;
@@ -41,6 +43,7 @@ interface Props {
 }
 
 export default function RecordCard({ record, updated }: Props) {
+  const [helpOpen, setHelpOpen] = useState(false);
   return (
     <section style={{
       background: "var(--mdb-slate)",
@@ -85,8 +88,11 @@ export default function RecordCard({ record, updated }: Props) {
           <span style={{ fontSize: 11, color: "var(--mdb-text-dim)" }}>
             {record.record_id}
           </span>
+          <HelpButton open={helpOpen} onToggle={() => setHelpOpen(o => !o)} />
         </div>
       </div>
+
+      {helpOpen && <StepHelpPanel content={STEP_HELP[1]} />}
 
       <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 0 }}>
         {/* Processing status */}

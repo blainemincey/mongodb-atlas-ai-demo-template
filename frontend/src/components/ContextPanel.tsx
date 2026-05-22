@@ -1,4 +1,6 @@
+import { useState } from "react";
 import type { SearchResults, KnowledgeItem, HistoricalRecord } from "../types";
+import StepHelpPanel, { HelpButton, STEP_HELP } from "./StepHelp";
 
 type Filters = SearchResults["query_filters_applied"];
 
@@ -196,6 +198,7 @@ function HistoricalRecordCard({ record, rank, filters }: { record: HistoricalRec
 }
 
 export default function ContextPanel({ result }: { result: SearchResults }) {
+  const [helpOpen, setHelpOpen] = useState(false);
   const { knowledge_base, historical_records, query_filters_applied, meta } = result;
 
   const activeFilterCount = Object.values(query_filters_applied).filter(Boolean).length;
@@ -239,8 +242,11 @@ export default function ContextPanel({ result }: { result: SearchResults }) {
               {activeFilterCount} hard filter{activeFilterCount > 1 ? "s" : ""} applied
             </span>
           )}
+          <HelpButton open={helpOpen} onToggle={() => setHelpOpen(o => !o)} />
         </div>
       </div>
+
+      {helpOpen && <StepHelpPanel content={STEP_HELP[4]} />}
 
       <div style={{ padding: "16px 18px", display: "flex", flexDirection: "column", gap: 24 }}>
         {/* Legend */}

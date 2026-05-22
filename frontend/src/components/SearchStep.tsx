@@ -1,4 +1,6 @@
+import { useState } from "react";
 import type { DemoRecord } from "../types";
+import StepHelpPanel, { HelpButton, STEP_HELP } from "./StepHelp";
 
 export interface SearchFilters {
   category: string;
@@ -15,6 +17,7 @@ interface Props {
 }
 
 export default function SearchStep({ record, filters, onFiltersChange, loading, onSearch, alreadyDone }: Props) {
+  const [helpOpen, setHelpOpen] = useState(false);
   const { category, outcome } = filters;
 
   function handleSearch() {
@@ -66,7 +69,10 @@ export default function SearchStep({ record, filters, onFiltersChange, loading, 
         <span style={{ fontSize: 11, color: "var(--mdb-text-dim)" }}>
           Semantic similarity + hard metadata filters
         </span>
+        <HelpButton open={helpOpen} onToggle={() => setHelpOpen(o => !o)} />
       </div>
+
+      {helpOpen && <StepHelpPanel content={STEP_HELP[3]} />}
 
       <div style={{ padding: "14px 18px" }}>
         <p style={{ fontSize: 12, color: "var(--mdb-text-dim)", marginBottom: 12, lineHeight: 1.6 }}>

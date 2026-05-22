@@ -1,4 +1,6 @@
+import { useState } from "react";
 import type { EmbeddingResult } from "../types";
+import StepHelpPanel, { HelpButton, STEP_HELP } from "./StepHelp";
 
 interface Props {
   embedding: EmbeddingResult | null;
@@ -8,6 +10,7 @@ interface Props {
 }
 
 export default function EmbeddingStep({ embedding, loading, onEmbed, alreadyDone }: Props) {
+  const [helpOpen, setHelpOpen] = useState(false);
   return (
     <section style={{
       background: "var(--mdb-slate)",
@@ -51,7 +54,10 @@ export default function EmbeddingStep({ embedding, loading, onEmbed, alreadyDone
             </span>
           ) : embedding ? "Re-embed" : "Generate Embedding"}
         </button>
+        <HelpButton open={helpOpen} onToggle={() => setHelpOpen(o => !o)} />
       </div>
+
+      {helpOpen && <StepHelpPanel content={STEP_HELP[2]} />}
 
       <div style={{ padding: "14px 18px" }}>
         {!embedding && !loading && (

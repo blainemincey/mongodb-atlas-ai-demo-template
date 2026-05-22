@@ -1,4 +1,6 @@
+import { useState } from "react";
 import type { OutputResult } from "../types";
+import StepHelpPanel, { HelpButton, STEP_HELP } from "./StepHelp";
 
 interface Props {
   result: OutputResult | null;
@@ -13,6 +15,7 @@ function determinationColor(det: string) {
 }
 
 export default function OutputPanel({ result, loading, onGenerate }: Props) {
+  const [helpOpen, setHelpOpen] = useState(false);
   return (
     <section style={{
       background: "var(--mdb-slate)",
@@ -45,20 +48,25 @@ export default function OutputPanel({ result, loading, onGenerate }: Props) {
             Template generates · MongoDB stores · record updates in place
           </span>
         </div>
-        <button
-          className={result ? "btn-secondary" : "btn-primary"}
-          onClick={onGenerate}
-          disabled={loading}
-          style={{ minWidth: 160 }}
-        >
-          {loading ? (
-            <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span className="spinner" style={{ width: 14, height: 14 }} />
-              Generating...
-            </span>
-          ) : result ? "Regenerate" : "Generate Output"}
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <button
+            className={result ? "btn-secondary" : "btn-primary"}
+            onClick={onGenerate}
+            disabled={loading}
+            style={{ minWidth: 160 }}
+          >
+            {loading ? (
+              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span className="spinner" style={{ width: 14, height: 14 }} />
+                Generating...
+              </span>
+            ) : result ? "Regenerate" : "Generate Output"}
+          </button>
+          <HelpButton open={helpOpen} onToggle={() => setHelpOpen(o => !o)} />
+        </div>
       </div>
+
+      {helpOpen && <StepHelpPanel content={STEP_HELP[5]} />}
 
       <div style={{ padding: "14px 18px" }}>
         {!result && !loading && (
