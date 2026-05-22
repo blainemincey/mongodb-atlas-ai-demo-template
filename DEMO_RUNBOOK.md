@@ -21,6 +21,7 @@
 # 1. Apply a domain pack (skip if you've already customized manually)
 python scripts/init_domain.py --list          # see available domains
 python scripts/init_domain.py <domain-name>   # e.g. it-support, mortgage
+# Claude Code alternative: /init-domain (interactive) or /init-domain <domain-name>
 
 # 2. Install dependencies
 cd backend && pip install -r requirements.txt && cd ..
@@ -61,6 +62,7 @@ Each domain uses its own database. To switch:
 
 ```bash
 python scripts/init_domain.py <new-domain>   # patches data files + .env
+# Claude Code alternative: /init-domain <new-domain>
 python scripts/setup.py                      # seeds the new database
 ./start.sh
 ```

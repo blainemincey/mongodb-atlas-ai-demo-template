@@ -7,6 +7,13 @@ python scripts/init_domain.py --list          # see all available domains
 python scripts/init_domain.py it-support      # apply a domain
 ```
 
+If you're working in Claude Code, use the `/init-domain` slash command instead:
+
+```
+/init-domain              # list domains and pick one interactively
+/init-domain it-support   # apply directly
+```
+
 `init_domain.py` copies the domain's data files into place, patches the frontend
 scenario config, updates `.env`, and prints next steps.
 

@@ -29,6 +29,14 @@ python scripts/setup.py                     # seed data + create indexes
 ./start.sh                                  # start the app
 ```
 
+If you're working in Claude Code, the `/init-domain` slash command wraps the
+same script interactively:
+
+```
+/init-domain              # list domains and pick one
+/init-domain it-support   # apply directly
+```
+
 | Domain | Scenarios | Outcomes |
 |--------|-----------|---------|
 | `healthcare` | Medical imaging · Specialty pharmacy · Behavioral health | APPROVED / DENIED / PEND_FOR_REVIEW |
@@ -66,7 +74,9 @@ customize by hand.
 ## Quick start
 
 ```bash
-# 1. Apply a domain pack (or customize via @CUSTOMIZE_PROMPT.md)
+# 1. Apply a domain pack
+#    Shell:       python scripts/init_domain.py it-support
+#    Claude Code: /init-domain it-support
 python scripts/init_domain.py it-support
 
 # 2. Configure credentials
