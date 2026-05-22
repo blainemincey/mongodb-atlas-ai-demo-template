@@ -1,7 +1,8 @@
 # Atlas AI Demo Template — Manual Customization Reference
 
 > **Faster option:** `python scripts/init_domain.py <domain>` applies a
-> pre-built domain pack automatically. This checklist is for manual
+> pre-built domain pack automatically, then `./setup.sh` handles dependencies
+> and database seeding in one command. This checklist is for manual
 > customization or for building a new domain pack from scratch.
 
 A reusable scaffold for building MongoDB Atlas AI demos. Preserves a proven

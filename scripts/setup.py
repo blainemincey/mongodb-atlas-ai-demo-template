@@ -272,46 +272,53 @@ def main() -> None:
     step("Step 8: Smoke-testing vector search")
 
     test_query = "TODO replace with domain-specific test query for your knowledge base"
-    log(f"Query: '{test_query[:60]}'")
-    test_vector = embed_query(test_query)
 
-    kb_results = list(
-        db[KB_COLLECTION].aggregate([
-            {
-                "$vectorSearch": {
-                    "index": KB_INDEX_NAME,
-                    "path": KB_EMBED_FIELD,
-                    "queryVector": test_vector,
-                    "numCandidates": 20,
-                    "limit": 3,
-                }
-            },
-            {"$project": {"kb_id": 1, "title": 1, "_id": 0,
-                          "score": {"$meta": "vectorSearchScore"}}},
-        ])
-    )
-    log("Top knowledge base matches:")
-    for k in kb_results:
-        log(f"  {k.get('kb_id')} | {str(k.get('title', ''))[:50]} | score={k.get('score', 0):.4f}")
+    if test_query.startswith("TODO"):
+        log("Smoke test query not set for this domain.")
+        log("Run 'python scripts/init_domain.py <domain>' to apply a domain pack,")
+        log("which sets a relevant query. Skipping semantic relevance check.")
+        log("(Index connectivity was already confirmed in Step 7.)")
+    else:
+        log(f"Query: '{test_query[:60]}'")
+        test_vector = embed_query(test_query)
 
-    hist_results = list(
-        db[HIST_COLLECTION].aggregate([
-            {
-                "$vectorSearch": {
-                    "index": HIST_INDEX_NAME,
-                    "path": HIST_EMBED_FIELD,
-                    "queryVector": test_vector,
-                    "numCandidates": 20,
-                    "limit": 3,
-                }
-            },
-            {"$project": {"record_id": 1, "outcome": 1, "_id": 0,
-                          "score": {"$meta": "vectorSearchScore"}}},
-        ])
-    )
-    log("Top historical record matches:")
-    for h in hist_results:
-        log(f"  {h.get('record_id')} | {h.get('outcome')} | score={h.get('score', 0):.4f}")
+        kb_results = list(
+            db[KB_COLLECTION].aggregate([
+                {
+                    "$vectorSearch": {
+                        "index": KB_INDEX_NAME,
+                        "path": KB_EMBED_FIELD,
+                        "queryVector": test_vector,
+                        "numCandidates": 20,
+                        "limit": 3,
+                    }
+                },
+                {"$project": {"kb_id": 1, "title": 1, "_id": 0,
+                              "score": {"$meta": "vectorSearchScore"}}},
+            ])
+        )
+        log("Top knowledge base matches:")
+        for k in kb_results:
+            log(f"  {k.get('kb_id')} | {str(k.get('title', ''))[:50]} | score={k.get('score', 0):.4f}")
+
+        hist_results = list(
+            db[HIST_COLLECTION].aggregate([
+                {
+                    "$vectorSearch": {
+                        "index": HIST_INDEX_NAME,
+                        "path": HIST_EMBED_FIELD,
+                        "queryVector": test_vector,
+                        "numCandidates": 20,
+                        "limit": 3,
+                    }
+                },
+                {"$project": {"record_id": 1, "outcome": 1, "_id": 0,
+                              "score": {"$meta": "vectorSearchScore"}}},
+            ])
+        )
+        log("Top historical record matches:")
+        for h in hist_results:
+            log(f"  {h.get('record_id')} | {h.get('outcome')} | score={h.get('score', 0):.4f}")
 
     # ── Done ──────────────────────────────────────────────────────
     print("\n" + "=" * 60)

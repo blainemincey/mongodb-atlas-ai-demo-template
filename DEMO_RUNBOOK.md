@@ -6,8 +6,10 @@
 
 - [ ] Domain pack applied (`python scripts/init_domain.py <domain>`) or custom
       data files in place under `backend/data/`
-- [ ] `.env` file present at repo root with `MONGODB_URI`, `VOYAGE_API_KEY`, `DEMO_NAME`
-- [ ] `python scripts/setup.py` completed successfully (all indexes READY)
+- [ ] `.env` present at repo root with real (non-placeholder) `MONGODB_URI`,
+      `VOYAGE_API_KEY`, and `DEMO_NAME`
+- [ ] `./setup.sh` (or `python scripts/setup.py`) completed successfully — all
+      indexes READY
 - [ ] `./start.sh` running — backend on :8000, frontend on :5173
 - [ ] http://localhost:5173 loads without errors in browser
 - [ ] All three scenarios (A, B, C) load records without 404 errors
@@ -18,24 +20,29 @@
 ## Setup
 
 ```bash
-# 1. Apply a domain pack (skip if you've already customized manually)
+# 1. Apply a domain pack
 python scripts/init_domain.py --list          # see available domains
 python scripts/init_domain.py <domain-name>   # e.g. it-support, mortgage
-# Claude Code alternative: /init-domain (interactive) or /init-domain <domain-name>
+# Claude Code alternative: /init-domain (interactive) or /init-domain <domain>
 
-# 2. Install dependencies
-cd backend && pip install -r requirements.txt && cd ..
-cd frontend && npm install && cd ..
+# 2. Install dependencies, configure .env, and seed the database
+./setup.sh
+# This script:
+#   - Checks Python 3.11+ and Node 18+
+#   - Creates backend/.venv and installs pip dependencies
+#   - Runs npm install in frontend/
+#   - Copies .env.example → .env (if missing) and prompts for credentials
+#   - Runs scripts/setup.py to seed data and create Atlas Vector Search indexes
+#
+# Claude Code alternative: /setup
+#
+# If you prefer to do steps manually:
+#   cp .env.example .env            # then fill in MONGODB_URI and VOYAGE_API_KEY
+#   cd backend && pip install -r requirements.txt
+#   cd ../frontend && npm install
+#   cd .. && python scripts/setup.py
 
-# 3. Configure environment
-cp .env.example .env
-# Edit .env: fill in MONGODB_URI and VOYAGE_API_KEY
-# (init_domain.py sets DEMO_NAME and DB_NAME automatically)
-
-# 4. Seed database and create indexes
-python scripts/setup.py
-
-# 5. Start services
+# 3. Start services
 ./start.sh
 ```
 
@@ -54,6 +61,12 @@ Or use the **Reset Demo** button in the UI header.
 python scripts/reset_demo.py --hard
 ```
 
+**Reset then restart in one command:**
+```bash
+./start.sh --reset       # soft
+./start.sh --reset-hard  # hard
+```
+
 ---
 
 ## Switching domains between sessions
@@ -67,7 +80,7 @@ python scripts/setup.py                      # seeds the new database
 ./start.sh
 ```
 
-The previous domain's database is untouched in Atlas — just point `DB_NAME`
+The previous domain's database is untouched in Atlas — point `DB_NAME`
 back to it in `.env` to restore.
 
 ---
@@ -76,14 +89,15 @@ back to it in `.env` to restore.
 
 | Symptom | Likely cause | Fix |
 |---------|-------------|-----|
-| 404 on scenario load | `setup.py` not run or collection empty | Run `python scripts/setup.py` |
-| Scenario titles show `[TODO]` | Domain pack not applied | Run `python scripts/init_domain.py <domain>` |
+| 404 on scenario load | `setup.py` not run or collection empty | `python scripts/setup.py` |
+| Scenario titles show `[TODO]` | Domain pack not applied | `python scripts/init_domain.py <domain>` |
 | "no embedding yet" error on search | Step 2 skipped | Click Embed on the record first |
 | Vector search returns 0 results | Index not READY | Wait for index build; check Atlas UI |
 | Vector search returns wrong category | Category options in UI don't match KB data | Re-run `init_domain.py` to patch `SearchStep.tsx` |
-| `VOYAGE_API_KEY` error | Missing env var | Check `.env` file |
-| CORS error in browser | Backend not running | Check `./start.sh` output |
-| `ModuleNotFoundError: voyageai` | Python deps not installed | `cd backend && pip install -r requirements.txt` |
+| `VOYAGE_API_KEY` error | Missing or placeholder env var | Run `./setup.sh` to set credentials |
+| CORS error in browser | Backend not running or wrong port | Check `backend.log`; verify `BACKEND_PORT` in `.env` |
+| `ModuleNotFoundError` on startup | Python deps not installed | `./setup.sh --deps-only` |
+| Backend didn't start within 30s | uvicorn error at launch | `tail -f backend.log` for details |
 
 ---
 
@@ -94,6 +108,7 @@ back to it in `.env` to restore.
 | Frontend | http://localhost:5173 |
 | Backend API | http://localhost:8000 |
 | API docs (Swagger) | http://localhost:8000/docs |
+| Health check | http://localhost:8000/api/health |
 | Atlas UI | https://cloud.mongodb.com |
 | Voyage AI dashboard | https://dash.voyageai.com |
 
@@ -106,8 +121,24 @@ index names, filter fields, and embedding field names. Edit it if you add new
 filterable fields to your data.
 
 Key variables:
-- `KB_FILTER_FIELDS` — fields added as filter paths to the `kb_vector_index`
+- `KB_FILTER_FIELDS` — fields added as filter paths to `kb_vector_index`
 - `HIST_FILTER_FIELDS` — fields added as filter paths to `historical_vector_index`
 
 Filter fields in the index definition must match exactly what you pass to
 `$vectorSearch filter` in the search router.
+
+---
+
+## Docker path (no Python venv required)
+
+If Docker is available, the full stack can be run without installing Python
+or Node locally:
+
+```bash
+python scripts/init_domain.py <domain>  # still needs Python for init
+cp .env.example .env                    # fill in credentials
+docker compose up --build
+```
+
+Open http://localhost:5173. The frontend waits for the backend health check
+before starting, so there's no race on first boot.

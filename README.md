@@ -25,8 +25,6 @@ Six domains are included and ready to run. Apply one in seconds:
 ```bash
 python scripts/init_domain.py --list        # see all domains
 python scripts/init_domain.py it-support    # apply a domain
-python scripts/setup.py                     # seed data + create indexes
-./start.sh                                  # start the app
 ```
 
 If you're working in Claude Code, the `/init-domain` slash command wraps the
@@ -46,8 +44,54 @@ same script interactively:
 | `mortgage` | Strong conventional · Borderline FHA · Jumbo asset depletion | APPROVED / DENIED / REFER_TO_SENIOR_UNDERWRITER |
 | `retail-support` | Electronics return · Apparel defect · Appliance refund | APPROVE / DENY / ESCALATE |
 
-`init_domain.py` copies the domain's data files into place, patches the
-frontend scenario config, updates `.env`, and prints the next steps.
+---
+
+## Quick start (local)
+
+```bash
+# 1. Apply a domain pack
+python scripts/init_domain.py it-support
+
+# 2. Install dependencies + configure credentials
+./setup.sh
+#    Creates backend/.venv, installs pip + npm deps, copies .env.example → .env,
+#    and prompts for your MongoDB URI and Voyage AI API key.
+#    Run ./setup.sh --deps-only to install without seeding the database.
+
+# 3. Start the app
+./start.sh
+```
+
+Open http://localhost:5173
+
+If you're using Claude Code, `/init-domain` and `/setup` slash commands drive
+both steps interactively without leaving your editor.
+
+The **Docs** menu in the header gives presenters in-app access to the README,
+Demo Script, and Runbook without leaving the browser.
+
+---
+
+## Quick start (Docker)
+
+No Python venv or `npm install` required — Docker handles the build.
+
+```bash
+# 1. Apply a domain pack (still needs Python for the init script)
+python scripts/init_domain.py it-support
+
+# 2. Configure credentials
+cp .env.example .env
+# Edit .env: fill in MONGODB_URI and VOYAGE_API_KEY
+
+# 3. Build and start
+docker compose up --build
+```
+
+Open http://localhost:5173
+
+The frontend container waits for the backend health check to pass before
+starting, so there's no race condition on first boot.
 
 ---
 
@@ -71,32 +115,6 @@ customize by hand.
 
 ---
 
-## Quick start
-
-```bash
-# 1. Apply a domain pack
-#    Shell:       python scripts/init_domain.py it-support
-#    Claude Code: /init-domain it-support
-python scripts/init_domain.py it-support
-
-# 2. Configure credentials
-cp .env.example .env
-# Edit .env: fill in MONGODB_URI and VOYAGE_API_KEY
-
-# 3. Seed the database and create Atlas Vector Search indexes
-python scripts/setup.py
-
-# 4. Start the app
-./start.sh
-```
-
-Open http://localhost:5173
-
-The **Docs** menu in the header gives presenters in-app access to the README,
-Demo Script, and Runbook without leaving the browser.
-
----
-
 ## Architecture
 
 ```
@@ -107,6 +125,7 @@ FastAPI (backend/)  +  React/Vite/TS (frontend/)  +  Docker Compose
         ├── /api/search/{scenario}           — Atlas Vector Search
         ├── /api/records/{scenario}/output   — generate output + write-back
         ├── /api/records/reset-all           — soft reset
+        ├── /api/health                      — health check
         └── /api/docs/{readme|script|runbook} — serve markdown docs to UI
 ```
 
@@ -114,4 +133,5 @@ FastAPI (backend/)  +  React/Vite/TS (frontend/)  +  Docker Compose
 
 - MongoDB Atlas cluster (free tier M0 works)
 - Voyage AI API key (free tier sufficient for demos)
-- Python 3.11+, Node 18+, Docker (optional)
+- **Local path:** Python 3.11+, Node 18+
+- **Docker path:** Docker with Compose plugin
