@@ -80,6 +80,14 @@ PY_MINOR=$(echo "$PY_VER" | cut -d. -f2)
 if [ "$PY_MAJOR" -lt 3 ] || { [ "$PY_MAJOR" -eq 3 ] && [ "$PY_MINOR" -lt 11 ]; }; then
   err "Python 3.11+ required. Found: Python $PY_VER"
 fi
+if [ "$PY_MAJOR" -eq 3 ] && [ "$PY_MINOR" -ge 14 ]; then
+  log "WARNING: Python $PY_VER detected. The voyageai package caps at <3.14"
+  log "  and has not yet released a 3.14-compatible build. Installing anyway"
+  log "  with --ignore-requires-python (works in practice; upstream lag only)."
+  PY_NEW=1
+else
+  PY_NEW=0
+fi
 ok "Python $PY_VER"
 
 if ! command -v node &>/dev/null; then
@@ -110,7 +118,11 @@ fi
 
 log "Installing Python dependencies..."
 backend/.venv/bin/pip install --quiet --upgrade pip
-backend/.venv/bin/pip install --quiet -r backend/requirements.txt
+if [ "$PY_NEW" -eq 1 ]; then
+  backend/.venv/bin/pip install --quiet --ignore-requires-python -r backend/requirements.txt
+else
+  backend/.venv/bin/pip install --quiet -r backend/requirements.txt
+fi
 ok "Requirements installed"
 
 # ── Step 3: Frontend dependencies ────────────────────────────────────────────
