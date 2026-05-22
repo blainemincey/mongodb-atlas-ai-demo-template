@@ -16,22 +16,45 @@ embeddings and Atlas Vector Search.
   retrieved context and writes the result back to the same record document,
   updating `processing_status` to `READY_FOR_REVIEW`.
 
-## Quick start
+---
+
+## Customizing for a new domain
+
+Open this repo in Claude Code and run:
+
+```
+@CUSTOMIZE_PROMPT.md
+```
+
+Claude will interview you (6 questions, one message), generate all sample
+data, fill in every placeholder, handle your `.env` credentials, and verify
+the build — in a single session. The generated content includes a domain-specific
+demo script accessible from the **Docs** menu inside the running app.
+
+See [TEMPLATE.md](./TEMPLATE.md) for the manual checklist if you prefer to
+customize by hand.
+
+---
+
+## Quick start (after customizing)
 
 ```bash
-cp .env.example .env
-# Edit .env — fill in MONGODB_URI and VOYAGE_API_KEY
+# 1. Ensure .env is filled in (MONGODB_URI + VOYAGE_API_KEY)
+cp .env.example .env   # if not already done by the interview
 
-python scripts/setup.py   # creates collections, indexes, seeds data
-./start.sh                # starts backend + frontend
+# 2. Seed the database and create Atlas Vector Search indexes
+python scripts/setup.py
+
+# 3. Start the app
+./start.sh
 ```
 
 Open http://localhost:5173
 
-## Adapting this template
+The **Docs** menu in the header gives presenters in-app access to the README,
+Demo Script, and Runbook without leaving the browser.
 
-See [TEMPLATE.md](./TEMPLATE.md) for the full checklist of what to replace
-when building a new domain-specific demo.
+---
 
 ## Architecture
 
@@ -42,7 +65,8 @@ FastAPI (backend/)  +  React/Vite/TS (frontend/)  +  Docker Compose
         ├── /api/records/{scenario}/embed    — Voyage AI embed + write-back
         ├── /api/search/{scenario}           — Atlas Vector Search
         ├── /api/records/{scenario}/output   — generate output + write-back
-        └── /api/records/reset-all           — soft reset
+        ├── /api/records/reset-all           — soft reset
+        └── /api/docs/{readme|script|runbook} — serve markdown docs to UI
 ```
 
 ## Requirements

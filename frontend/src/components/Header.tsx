@@ -66,7 +66,7 @@ export default function Header({ onReset, resetEnabled = false, resetting = fals
               fontSize: 12,
               color: "var(--mdb-text-dim)",
             }}>
-              Healthcare AI Demo · Voyage AI + Vector Search
+              Atlas AI Demo · Voyage AI + Vector Search
             </span>
           </div>
         </div>
@@ -139,7 +139,7 @@ export default function Header({ onReset, resetEnabled = false, resetting = fals
               onClick={onReset}
               disabled={!resetEnabled || resetting}
               style={{ fontSize: 11, padding: "5px 12px", whiteSpace: "nowrap" }}
-              title="Soft reset all claims: clears AI output and restores PENDED status. Preserves embeddings."
+              title="Soft reset: clears AI output and restores PENDING status. Preserves embeddings."
             >
               {resetting ? "Resetting..." : "Reset Demo"}
             </button>

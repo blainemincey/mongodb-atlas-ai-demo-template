@@ -86,10 +86,23 @@ E. ScenarioSelector.tsx — title, subtitle, detail for each of A / B / C
 
 F. App.tsx SCENARIO_CONFIG — label and description for each scenario
 
-G. SearchStep.tsx — update the category filter <select> options to match the
-   categories used in the knowledge base (replace the single "General" option)
+G. SearchStep.tsx — update the category filter <select> options to match
+   the categories used in the knowledge base (replace the single "General"
+   option with the actual category values from the KB items above)
 
-H. setup.py smoke test query — a domain-specific search string (line ~274)
+H. DEMO_SCRIPT.md — fill in the domain-specific placeholders in the existing
+   script template. Specifically:
+   - Replace [DOMAIN] with the domain name throughout
+   - Replace [DOMAIN FIELDS] in Step 1 with 3–4 actual field names from the records
+   - Replace [KNOWLEDGE BASE DESCRIPTION] and [KNOWLEDGE BASE LABEL] with the
+     right terminology for the domain (e.g. "lending guidelines", "policy documents")
+   - Replace [HISTORICAL RECORDS DESCRIPTION] and [HISTORICAL RECORDS LABEL]
+     similarly (e.g. "comparable past loans", "prior adjudicated cases")
+   - Fill in the Scenario variations table with titles and one-line descriptions
+   - Keep all the generic talking points, technical explanations, and Q&A
+     responses intact — only replace the domain-specific placeholders
+
+I. setup.py smoke test query — a domain-specific search string (line ~274)
    that should retrieve the most relevant knowledge base items
 
 STEP 3 — Show a preview and ask for approval
