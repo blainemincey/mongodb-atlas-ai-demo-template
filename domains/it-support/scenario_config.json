@@ -1,0 +1,14 @@
+{
+  "A": {
+    "label": "Hardware — Boot Failure",
+    "description": "Laptop disk failure under warranty — surfaces standard replacement procedure"
+  },
+  "B": {
+    "label": "Software — ERP Crash",
+    "description": "Post-update SAP crash affecting Finance team — surfaces rollback procedure"
+  },
+  "C": {
+    "label": "Network — VPN Failure",
+    "description": "Remote VPN connectivity failure — borderline resolution vs. escalation"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "A": {
+    "label": "Limitation of Liability",
+    "description": "Mutual fee cap, standard carve-outs — acceptable path"
+  },
+  "B": {
+    "label": "Indemnification Clause",
+    "description": "One-sided vendor indemnification, no reciprocal protection — flag for revision"
+  },
+  "C": {
+    "label": "IP Assignment Clause",
+    "description": "Overbroad assignment, no pre-existing IP carve-outs — escalate to counsel"
+  }
+}

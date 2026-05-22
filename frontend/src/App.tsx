@@ -11,12 +11,13 @@ import SearchStep, { type SearchFilters } from "./components/SearchStep";
 import ContextPanel from "./components/ContextPanel";
 import OutputPanel from "./components/OutputPanel";
 
-// TODO: Replace scenario labels and descriptions with domain-specific content
+// BEGIN_DOMAIN:scenario_config — replaced by scripts/init_domain.py
 const SCENARIO_CONFIG: Record<Scenario, { label: string; description: string }> = {
   A: { label: "Scenario A", description: "[TODO: describe this scenario]" },
   B: { label: "Scenario B", description: "[TODO: describe this scenario]" },
   C: { label: "Scenario C", description: "[TODO: describe this scenario]" },
 };
+// END_DOMAIN:scenario_config
 
 type DemoState = {
   scenario: Scenario | null;

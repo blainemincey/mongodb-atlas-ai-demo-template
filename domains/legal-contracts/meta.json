@@ -1,0 +1,10 @@
+{
+  "name": "Legal Contract Review",
+  "description": "Contract clauses reviewed against standard templates and comparable past contract decisions to produce a legal assessment.",
+  "db_name": "contract_review_demo",
+  "demo_name": "Contract Review Demo",
+  "categories": ["liability", "IP", "termination"],
+  "outcome_values": ["ACCEPTABLE", "FLAG_FOR_REVISION", "ESCALATE_TO_COUNSEL"],
+  "record_ids": ["CTR-001-A", "CTR-001-B", "CTR-001-C"],
+  "smoke_test_query": "limitation of liability indemnification mutual cap software services consequential damages exclusion"
+}

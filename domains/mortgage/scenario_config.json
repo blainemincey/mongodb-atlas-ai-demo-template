@@ -1,0 +1,14 @@
+{
+  "A": {
+    "label": "Strong Conventional",
+    "description": "FICO 742, DTI 28%, 20% down — clean APPROVE path"
+  },
+  "B": {
+    "label": "Borderline FHA",
+    "description": "FICO 638, DTI 43%, 3.5% down with compensating factors"
+  },
+  "C": {
+    "label": "Jumbo Asset Depletion",
+    "description": "Retired borrower qualifying on assets — REFER path"
+  }
+}

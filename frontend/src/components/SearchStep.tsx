@@ -86,8 +86,9 @@ export default function SearchStep({ record, filters, onFiltersChange, loading, 
               style={filterStyle}
             >
               <option value="">Any</option>
-              {/* TODO: Replace these options with domain-specific categories */}
+              {/* BEGIN_DOMAIN:category_options — replaced by scripts/init_domain.py */}
               <option value="general">General</option>
+              {/* END_DOMAIN:category_options */}
             </select>
           </div>
           <div>

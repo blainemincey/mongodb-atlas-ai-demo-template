@@ -1,0 +1,10 @@
+{
+  "name": "IT Support Ticket Triage",
+  "description": "Help desk tickets triaged against resolution procedures and similar past cases to produce a handling recommendation.",
+  "db_name": "it_support_demo",
+  "demo_name": "IT Support Triage Demo",
+  "categories": ["hardware", "software", "network"],
+  "outcome_values": ["RESOLVED", "ESCALATED", "CLOSED_NO_ACTION"],
+  "record_ids": ["TKT-001-A", "TKT-001-B", "TKT-001-C"],
+  "smoke_test_query": "hardware failure laptop boot disk drive RAM replacement warranty ProSupport"
+}

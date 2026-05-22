@@ -1,4 +1,8 @@
-# Atlas AI Demo Template
+# Atlas AI Demo Template — Manual Customization Reference
+
+> **Faster option:** `python scripts/init_domain.py <domain>` applies a
+> pre-built domain pack automatically. This checklist is for manual
+> customization or for building a new domain pack from scratch.
 
 A reusable scaffold for building MongoDB Atlas AI demos. Preserves a proven
 4-step demo workflow while keeping all domain-specific content in clearly
@@ -66,10 +70,12 @@ retrieval, and AI output all in one document, one database.
       in the config block if you add new filterable fields.
 
 - [ ] **`frontend/src/App.tsx`** — Update `SCENARIO_CONFIG` labels and descriptions
-      at the top of the file.
+      between the `BEGIN_DOMAIN:scenario_config` / `END_DOMAIN:scenario_config`
+      marker comments near the top of the file.
 
 - [ ] **`frontend/src/components/SearchStep.tsx`** — Update filter dropdown options
-      to match your domain's category values.
+      between the `BEGIN_DOMAIN:category_options` / `END_DOMAIN:category_options`
+      marker comments to match your domain's category values.
 
 - [ ] **`DEMO_SCRIPT.md`** and **`DEMO_RUNBOOK.md`** — Replace `[TODO]` placeholders
       with domain-specific talking points.

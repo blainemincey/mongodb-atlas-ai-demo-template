@@ -1,0 +1,10 @@
+{
+  "name": "Retail Customer Support",
+  "description": "Customer return, exchange, and refund requests evaluated against return policies and order history to produce a service recommendation.",
+  "db_name": "retail_support_demo",
+  "demo_name": "Retail Support Demo",
+  "categories": ["returns", "exchanges", "refunds"],
+  "outcome_values": ["APPROVE", "DENY", "ESCALATE"],
+  "record_ids": ["REQ-001-A", "REQ-001-B", "REQ-001-C"],
+  "smoke_test_query": "return policy electronics 30-day window original packaging receipt proof of purchase refund"
+}

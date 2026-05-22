@@ -1,0 +1,10 @@
+{
+  "name": "Mortgage Underwriting",
+  "description": "Loan applications reviewed against lending guidelines and comparable past loans to produce a draft underwriting recommendation.",
+  "db_name": "mortgage_demo",
+  "demo_name": "Mortgage Underwriting Demo",
+  "categories": ["conventional", "FHA", "jumbo"],
+  "outcome_values": ["APPROVED", "DENIED", "REFER_TO_SENIOR_UNDERWRITER"],
+  "record_ids": ["MTG-001-A", "MTG-001-B", "MTG-001-C"],
+  "smoke_test_query": "conventional mortgage conforming loan DTI FICO income verification employment history"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Insurance Claims P&C",
+  "description": "Auto and property insurance claims evaluated against coverage guidelines and comparable past decisions to produce a claims handling recommendation.",
+  "db_name": "insurance_claims_demo",
+  "demo_name": "Insurance Claims Demo",
+  "categories": ["auto", "property", "liability"],
+  "outcome_values": ["APPROVED", "DENIED", "NEEDS_INVESTIGATION"],
+  "record_ids": ["CLM-001-A", "CLM-001-B", "CLM-001-C"],
+  "smoke_test_query": "auto collision rear-end liability fault police report damage estimate repair coverage"
+}

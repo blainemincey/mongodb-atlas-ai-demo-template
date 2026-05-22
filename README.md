@@ -18,34 +18,65 @@ embeddings and Atlas Vector Search.
 
 ---
 
-## Customizing for a new domain
+## Pre-built domain packs
 
-Open this repo in Claude Code and run:
+Six domains are included and ready to run. Apply one in seconds:
+
+```bash
+python scripts/init_domain.py --list        # see all domains
+python scripts/init_domain.py it-support    # apply a domain
+python scripts/setup.py                     # seed data + create indexes
+./start.sh                                  # start the app
+```
+
+| Domain | Scenarios | Outcomes |
+|--------|-----------|---------|
+| `healthcare` | Medical imaging · Specialty pharmacy · Behavioral health | APPROVED / DENIED / PEND_FOR_REVIEW |
+| `insurance-claims` | Auto collision · Property water damage · Total loss | APPROVED / DENIED / NEEDS_INVESTIGATION |
+| `it-support` | Hardware failure · ERP crash · VPN outage | RESOLVED / ESCALATED / CLOSED_NO_ACTION |
+| `legal-contracts` | Liability cap · Indemnification · IP assignment | ACCEPTABLE / FLAG_FOR_REVISION / ESCALATE_TO_COUNSEL |
+| `mortgage` | Strong conventional · Borderline FHA · Jumbo asset depletion | APPROVED / DENIED / REFER_TO_SENIOR_UNDERWRITER |
+| `retail-support` | Electronics return · Apparel defect · Appliance refund | APPROVE / DENY / ESCALATE |
+
+`init_domain.py` copies the domain's data files into place, patches the
+frontend scenario config, updates `.env`, and prints the next steps.
+
+---
+
+## Custom domain
+
+To build a demo for a domain not in the list above, open this repo in
+Claude Code and run:
 
 ```
 @CUSTOMIZE_PROMPT.md
 ```
 
-Claude will interview you (6 questions, one message), generate all sample
-data, fill in every placeholder, handle your `.env` credentials, and verify
-the build — in a single session. The generated content includes a domain-specific
-demo script accessible from the **Docs** menu inside the running app.
+Claude will offer the domain pack list first, then — if none fit — interview
+you (6 questions, one message), generate all sample data, fill in every
+placeholder, handle your `.env` credentials, and verify the build. The output
+includes a domain-specific demo script accessible from the **Docs** menu
+inside the running app.
 
 See [TEMPLATE.md](./TEMPLATE.md) for the manual checklist if you prefer to
 customize by hand.
 
 ---
 
-## Quick start (after customizing)
+## Quick start
 
 ```bash
-# 1. Ensure .env is filled in (MONGODB_URI + VOYAGE_API_KEY)
-cp .env.example .env   # if not already done by the interview
+# 1. Apply a domain pack (or customize via @CUSTOMIZE_PROMPT.md)
+python scripts/init_domain.py it-support
 
-# 2. Seed the database and create Atlas Vector Search indexes
+# 2. Configure credentials
+cp .env.example .env
+# Edit .env: fill in MONGODB_URI and VOYAGE_API_KEY
+
+# 3. Seed the database and create Atlas Vector Search indexes
 python scripts/setup.py
 
-# 3. Start the app
+# 4. Start the app
 ./start.sh
 ```
 

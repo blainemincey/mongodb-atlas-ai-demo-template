@@ -1,0 +1,14 @@
+{
+  "A": {
+    "label": "Auto Collision",
+    "description": "Rear-end impact, clear liability, police report — clean approval path"
+  },
+  "B": {
+    "label": "Property Water Damage",
+    "description": "Coverage dispute: sudden failure vs. gradual leakage — investigation path"
+  },
+  "C": {
+    "label": "Auto Total Loss",
+    "description": "ACV dispute with aftermarket upgrades — investigation path"
+  }
+}

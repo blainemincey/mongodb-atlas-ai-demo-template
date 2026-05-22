@@ -1,0 +1,10 @@
+{
+  "name": "Healthcare Prior Authorization",
+  "description": "Prior authorization requests reviewed against clinical coverage policies and comparable past cases to produce an approval recommendation.",
+  "db_name": "prior_auth_demo",
+  "demo_name": "Prior Authorization Demo",
+  "categories": ["medical", "pharmacy", "behavioral_health"],
+  "outcome_values": ["APPROVED", "DENIED", "PEND_FOR_REVIEW"],
+  "record_ids": ["PA-001-A", "PA-001-B", "PA-001-C"],
+  "smoke_test_query": "MRI imaging orthopedic knee pain prior authorization medical necessity clinical criteria conservative treatment"
+}

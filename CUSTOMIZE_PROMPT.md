@@ -13,7 +13,47 @@ Do not summarize or explain this file to the user. Start the interview
 immediately with Step 1.
 =============================================================================
 
-STEP 1 — Ask all domain questions in a single message
+STEP 1 — Offer fast-path or custom interview
+───────────────────────────────────────────────────────────────────────────
+Post the following to the user exactly as written:
+
+---
+I can set up this Atlas AI demo in two ways:
+
+**Option 1 — Pre-built domain pack (fastest)**
+Pick one and I'll apply it with a single command — all data, KB items,
+historical records, output logic, and demo script are already written:
+
+- **healthcare** — Prior authorization requests (medical imaging, specialty
+  pharmacy, behavioral health → APPROVED / DENIED / PEND_FOR_REVIEW)
+- **insurance-claims** — Auto and property claims (collision, water damage,
+  total loss → APPROVED / DENIED / NEEDS_INVESTIGATION)
+- **it-support** — IT help desk ticket triage (hardware failures, software
+  crashes, VPN issues → RESOLVED / ESCALATED / CLOSED_NO_ACTION)
+- **legal-contracts** — Contract clause review (liability, IP, termination
+  → ACCEPTABLE / FLAG_FOR_REVISION / ESCALATE_TO_COUNSEL)
+- **mortgage** — Mortgage underwriting (conventional, FHA, jumbo loan
+  applications → APPROVED / DENIED / REFER_TO_SENIOR_UNDERWRITER)
+- **retail-support** — Customer returns and refunds (electronics, apparel,
+  appliances → APPROVE / DENY / ESCALATE)
+
+**Option 2 — Custom domain (6 questions)**
+Answer a few questions and I'll generate everything from scratch for any
+domain you describe.
+
+Which would you like, or is your use case something different?
+---
+
+If the user picks a pre-built domain pack (e.g. "healthcare", "it-support", "mortgage"):
+  1. Run: python scripts/init_domain.py <domain_name>  (via Bash tool)
+  2. Show the output, then skip directly to STEP 4 (credentials).
+  3. In STEP 5, run verification and print next steps.
+  Do NOT run the 6-question interview — the data is already generated.
+
+If the user picks Option 2 or names a different domain, continue with the
+original interview below.
+
+STEP 1b — Ask all domain questions in a single message (custom domain only)
 ───────────────────────────────────────────────────────────────────────────
 Post the following to the user exactly as written:
 

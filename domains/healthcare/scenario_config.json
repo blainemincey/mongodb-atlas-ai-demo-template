@@ -1,0 +1,5 @@
+{
+  "A": {"label": "Medical Imaging", "description": "Knee MRI after 6 weeks conservative treatment — clean approval path"},
+  "B": {"label": "Specialty Pharmacy", "description": "Biologic DMARD after two step therapy failures — exception request"},
+  "C": {"label": "Behavioral Health", "description": "Residential treatment after two inpatient admissions — PEND path"}
+}

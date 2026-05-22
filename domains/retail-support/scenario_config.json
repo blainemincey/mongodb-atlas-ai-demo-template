@@ -1,0 +1,5 @@
+{
+  "A": {"label": "Electronics Return", "description": "Within 30-day window, original packaging — clean approval path"},
+  "B": {"label": "Apparel Defect Return", "description": "Outside window, Gold loyalty, manufacturing defect — exception path"},
+  "C": {"label": "High-Value Appliance", "description": "102 days out, $749 vacuum motor failure — escalation path"}
+}
