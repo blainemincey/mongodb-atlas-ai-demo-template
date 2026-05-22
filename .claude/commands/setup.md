@@ -75,18 +75,30 @@ print(f'{len(DEMO_RECORDS)} demo records, {len(KNOWLEDGE_BASE)} KB items, {len(H
 
 If this fails, the domain data files may not be populated. Ask the user if they've run `/init-domain` yet. If not, offer to run it before proceeding.
 
-### 4 — Run setup.py
+### 4 — Ensure venv exists
+
+Check whether the venv is present:
+```
+test -f backend/.venv/bin/python && echo "venv_ok" || echo "venv_missing"
+```
+
+If `venv_missing`, run setup.sh in deps-only mode to create it:
+```
+./setup.sh --deps-only
+```
+
+Stream output so the user can see progress. This takes ~1 minute on first run.
+
+### 5 — Run setup.py
 
 Run:
 ```
-cd /path/to/repo && backend/.venv/bin/python scripts/setup.py
+backend/.venv/bin/python scripts/setup.py
 ```
-
-If the venv doesn't exist, tell the user to run `./setup.sh --deps-only` first.
 
 Stream all output to the user. The script takes 1–3 minutes (Voyage AI embedding + waiting for Atlas Vector Search indexes to reach READY state).
 
-### 5 — Report result
+### 6 — Report result
 
 On success, tell the user:
 ```

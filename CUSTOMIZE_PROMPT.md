@@ -214,7 +214,8 @@ Report results. Then close with:
 
   Next steps:
   1. [If .env has placeholders] Fill in MONGODB_URI and VOYAGE_API_KEY in .env
-  2. python scripts/setup.py    — seeds data, creates Atlas Vector Search indexes
+  2. ./setup.sh                 — installs deps (venv + npm) and seeds data
+     Or run /setup from the Claude Code prompt.
   3. ./start.sh                 — starts backend + frontend
   4. Open http://localhost:5173
 

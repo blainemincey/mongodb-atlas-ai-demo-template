@@ -280,11 +280,15 @@ def apply_domain(domain_name, update_env=True):
         if needs_voyage:
             creds.append("VOYAGE_API_KEY")
         print(f"  1. Fill in {', '.join(creds)} in .env")
-        print("  2. python scripts/setup.py    — seeds data, creates Atlas Vector Search indexes")
+        print("  2. ./setup.sh                 — installs deps (venv + npm) and seeds data")
+        print("     Note: run ./setup.sh before python directly; it creates the venv")
+        print("     that provides python-dotenv and other required packages.")
+        print("     Alternatively, run /setup from the Claude Code prompt.")
         print("  3. ./start.sh                 — starts backend + frontend")
         print("  4. Open http://localhost:5173")
     else:
-        print("  1. python scripts/setup.py    — seeds data, creates Atlas Vector Search indexes")
+        print("  1. ./setup.sh                 — seeds data, creates Atlas Vector Search indexes")
+        print("     Or run /setup from the Claude Code prompt for guided setup.")
         print("  2. ./start.sh                 — starts backend + frontend")
         print("  3. Open http://localhost:5173")
 

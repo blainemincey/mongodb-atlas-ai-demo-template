@@ -8,8 +8,7 @@
       data files in place under `backend/data/`
 - [ ] `.env` present at repo root with real (non-placeholder) `MONGODB_URI`,
       `VOYAGE_API_KEY`, and `DEMO_NAME`
-- [ ] `./setup.sh` (or `python scripts/setup.py`) completed successfully — all
-      indexes READY
+- [ ] `./setup.sh` completed successfully — all indexes READY
 - [ ] `./start.sh` running — backend on :8000, frontend on :5173
 - [ ] http://localhost:5173 loads without errors in browser
 - [ ] All three scenarios (A, B, C) load records without 404 errors
@@ -38,9 +37,12 @@ python scripts/init_domain.py <domain-name>   # e.g. it-support, mortgage
 #
 # If you prefer to do steps manually:
 #   cp .env.example .env            # then fill in MONGODB_URI and VOYAGE_API_KEY
-#   cd backend && pip install -r requirements.txt
-#   cd ../frontend && npm install
-#   cd .. && python scripts/setup.py
+#   python3 -m venv backend/.venv && backend/.venv/bin/pip install -r backend/requirements.txt
+#   cd frontend && npm install && cd ..
+#   backend/.venv/bin/python scripts/setup.py
+#   Note: python-dotenv and other deps live in the venv — running
+#   `python scripts/setup.py` directly (system Python) will fail with
+#   ModuleNotFoundError. Use backend/.venv/bin/python or just run ./setup.sh.
 
 # 3. Start services
 ./start.sh
@@ -76,7 +78,8 @@ Each domain uses its own database. To switch:
 ```bash
 python scripts/init_domain.py <new-domain>   # patches data files + .env
 # Claude Code alternative: /init-domain <new-domain>
-python scripts/setup.py                      # seeds the new database
+./setup.sh                                   # seeds the new database
+# Claude Code alternative: /setup
 ./start.sh
 ```
 
@@ -89,7 +92,7 @@ back to it in `.env` to restore.
 
 | Symptom | Likely cause | Fix |
 |---------|-------------|-----|
-| 404 on scenario load | `setup.py` not run or collection empty | `python scripts/setup.py` |
+| 404 on scenario load | `setup.py` not run or collection empty | `./setup.sh` or `/setup` |
 | Scenario titles show `[TODO]` | Domain pack not applied | `python scripts/init_domain.py <domain>` |
 | "no embedding yet" error on search | Step 2 skipped | Click Embed on the record first |
 | Vector search returns 0 results | Index not READY | Wait for index build; check Atlas UI |
