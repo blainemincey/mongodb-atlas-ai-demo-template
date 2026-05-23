@@ -133,6 +133,6 @@ FastAPI (backend/)  +  React/Vite/TS (frontend/)  +  Docker Compose
 
 - MongoDB Atlas cluster (free tier M0 works)
 - Voyage AI API key (free tier sufficient for demos)
-- **Local path:** Python 3.11–3.13 recommended (3.14+ works but triggers a
-  `--ignore-requires-python` workaround for `voyageai`), Node 18+
+- **Local path:** Python 3.11, 3.12, or 3.13 (3.14+ not yet supported —
+  `pydantic-core` and `voyageai` lack pre-built wheels for 3.14), Node 18+
 - **Docker path:** Docker with Compose plugin
