@@ -81,10 +81,11 @@ if [ "$PY_MAJOR" -lt 3 ] || { [ "$PY_MAJOR" -eq 3 ] && [ "$PY_MINOR" -lt 11 ]; }
   err "Python 3.11+ required. Found: Python $PY_VER"
 fi
 if [ "$PY_MAJOR" -eq 3 ] && [ "$PY_MINOR" -ge 14 ]; then
-  err "Python $PY_VER is not yet supported. Several dependencies (pydantic-core,
-  voyageai) require native extensions built with PyO3, which does not yet have
-  pre-built wheels for Python 3.14. Use Python 3.11, 3.12, or 3.13.
-  Tip: pyenv install 3.13 && pyenv local 3.13"
+  log "NOTE: Python $PY_VER detected. voyageai caps its metadata at <3.14 but"
+  log "  is pure Python — it will be installed with --ignore-requires-python."
+  PY_GE_14=1
+else
+  PY_GE_14=0
 fi
 ok "Python $PY_VER"
 
@@ -116,7 +117,13 @@ fi
 
 log "Installing Python dependencies..."
 backend/.venv/bin/pip install --quiet --upgrade pip
-backend/.venv/bin/pip install --quiet -r backend/requirements.txt
+if [ "$PY_GE_14" -eq 1 ]; then
+  # voyageai declares <3.14 in metadata but is pure Python — install it separately
+  grep -v "^voyageai" backend/requirements.txt | backend/.venv/bin/pip install --quiet -r /dev/stdin
+  backend/.venv/bin/pip install --quiet --ignore-requires-python voyageai==0.3.7
+else
+  backend/.venv/bin/pip install --quiet -r backend/requirements.txt
+fi
 ok "Requirements installed"
 
 # ── Step 3: Frontend dependencies ────────────────────────────────────────────
