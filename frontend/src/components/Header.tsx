@@ -13,9 +13,10 @@ interface Props {
   onReset?: () => void;
   resetEnabled?: boolean;
   resetting?: boolean;
+  demoName?: string;
 }
 
-export default function Header({ onReset, resetEnabled = false, resetting = false }: Props) {
+export default function Header({ onReset, resetEnabled = false, resetting = false, demoName = "Atlas AI Demo" }: Props) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeDoc, setActiveDoc] = useState<DocName | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -66,7 +67,7 @@ export default function Header({ onReset, resetEnabled = false, resetting = fals
               fontSize: 12,
               color: "var(--mdb-text-dim)",
             }}>
-              Atlas AI Demo · Voyage AI + Vector Search
+              {demoName} · Voyage AI + Vector Search
             </span>
           </div>
         </div>

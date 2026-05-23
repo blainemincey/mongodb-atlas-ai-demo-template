@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Scenario, Step, DemoRecord, EmbeddingResult, SearchResults, OutputResult } from "./types";
 import { api } from "./api";
 import Header from "./components/Header";
@@ -47,6 +47,11 @@ const initial: DemoState = {
 
 export default function App() {
   const [state, setState] = useState<DemoState>(initial);
+  const [demoName, setDemoName] = useState<string>("Atlas AI Demo");
+
+  useEffect(() => {
+    api.getDemoName().then(setDemoName).catch(() => {});
+  }, []);
 
   function set(patch: Partial<DemoState>) {
     setState((s) => ({ ...s, ...patch }));
@@ -118,6 +123,7 @@ export default function App() {
         onReset={runSoftReset}
         resetEnabled={!!record}
         resetting={loading}
+        demoName={demoName}
       />
 
       <main style={{ flex: 1, maxWidth: 1200, margin: "0 auto", padding: "0 24px 48px", width: "100%" }}>

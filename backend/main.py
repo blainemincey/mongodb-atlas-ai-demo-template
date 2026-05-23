@@ -35,4 +35,8 @@ app.include_router(docs_router)
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "platform": "MongoDB Atlas + Voyage AI + Atlas Vector Search"}
+    return {
+        "status": "ok",
+        "platform": "MongoDB Atlas + Voyage AI + Atlas Vector Search",
+        "demo_name": settings.demo_name,
+    }

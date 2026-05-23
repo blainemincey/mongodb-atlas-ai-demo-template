@@ -45,4 +45,7 @@ export const api = {
 
   fetchDoc: (name: "readme" | "runbook" | "script") =>
     request<{ name: string; title: string; content: string }>(`/docs/${name}`),
+
+  getDemoName: () =>
+    request<{ demo_name: string }>(`/health`).then(r => r.demo_name),
 };
