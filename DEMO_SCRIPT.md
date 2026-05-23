@@ -1,4 +1,4 @@
-# Demo Script
+# Demo Script — Healthcare Prior Authorization
 
 > This script is accessible from the **Docs** menu inside the running app.
 > Keep it open in a second tab or window while presenting.
@@ -22,7 +22,7 @@ Set up the problem before touching the UI:
 > workflow — where the records, the embeddings, the retrieved context, and the
 > AI output all live in the same database.
 >
-> We're going to process a [DOMAIN] record through four steps: embed it,
+> We're going to process a prior authorization request through four steps: embed it,
 > search for relevant context, and generate an AI-assisted output. Every one
 > of those steps writes its result back to the same MongoDB document. No
 > separate vector store. No separate AI pipeline. One platform."
@@ -34,10 +34,11 @@ Set up the problem before touching the UI:
 **Click:** Select a scenario from the top picker.
 
 **Say:**
-> "Here's the record as it exists in MongoDB right now. It has structured
-> fields — [DOMAIN FIELDS] — and a `record_text` field that holds the
-> unstructured narrative. Notice `record_embedding` is null and
-> `processing_status` is PENDING. This is the pre-AI state."
+> "Here's the prior authorization request as it exists in MongoDB right now.
+> It has structured fields — service_type, procedure_code, diagnosis_code,
+> plan_type — and a `record_text` field that holds the full clinical narrative.
+> Notice `record_embedding` is null and `processing_status` is PENDING.
+> This is the pre-AI state."
 
 **Key point to land:** This is a real operational document, not a
 pre-processed AI input. The embedding and AI output fields don't exist yet
@@ -70,7 +71,8 @@ pre-processed AI input. The embedding and AI output fields don't exist yet
 **Say:**
 > "Atlas Vector Search takes that stored embedding as the query vector and
 > finds semantically similar documents across two collections simultaneously —
-> [KNOWLEDGE BASE DESCRIPTION] and [HISTORICAL RECORDS DESCRIPTION].
+> clinical coverage policies and medical necessity criteria, and comparable
+> past prior authorization decisions.
 >
 > This isn't keyword search. It's cosine similarity over 1024-dimensional
 > space — so it surfaces content that means the same thing, not just content
@@ -93,10 +95,10 @@ is the one we stored in Step 2 — no second Voyage API call.
 **Click:** The "Retrieved Context" tab to see results.
 
 **Say:**
-> "These are the top matches, ranked by cosine similarity score. The [KNOWLEDGE
-> BASE LABEL] items on the left are the relevant reference material — the rules,
-> guidelines, or criteria that apply to this record. The [HISTORICAL RECORDS
-> LABEL] on the right are the closest analogues from past cases."
+> "These are the top matches, ranked by cosine similarity score. The coverage
+> policies items on the left are the relevant reference material — the clinical
+> criteria and coverage rules that apply to this request. The comparable prior
+> auth cases on the right are the closest analogues from past decisions."
 
 **Point at the similarity scores:**
 > "A score of 0.85+ means these documents are very close semantically to the
@@ -119,8 +121,8 @@ is the one we stored in Step 2 — no second Voyage API call.
 **After the write-back, switch to Tab 1:**
 > "Same document. The operational fields, the embedding, and now the AI output
 > — all in one MongoDB document. If an auditor or a downstream system queries
-> this record, they get everything: the raw data, what was retrieved, what
-> the AI concluded, and when."
+> this record, they get everything: the raw clinical data, what policies were
+> retrieved, what the AI recommended, and when."
 
 **Key point to land:**
 > "This is the pattern: every step in the AI workflow writes its artifact back
@@ -173,9 +175,9 @@ is the one we stored in Step 2 — no second Voyage API call.
 
 | Scenario | What it shows |
 |----------|---------------|
-| A        | [TODO: fill in after running @CUSTOMIZE_PROMPT.md] |
-| B        | [TODO] |
-| C        | [TODO] |
+| Medical Imaging — Clean approval path | MRI criteria met after 6 weeks conservative treatment — surfaces imaging authorization guidelines (KB-001, KB-002) and comparable approved cases. Shows how structured fields (service_type, procedure_code, diagnosis_code) refine the vector search context. |
+| Specialty Pharmacy — Step therapy exception request | Adalimumab after two DMARD failures — demonstrates the biologic step therapy KB (KB-003, KB-007) and how the system finds comparable exception-approved cases. Illustrates how documented adverse effects and DAS28 scores drive the determination. |
+| Behavioral Health — Complex residential request | 28-day residential treatment after two prior inpatient admissions — illustrates the PEND path and level-of-care criteria (KB-005, KB-006). Multi-criteria case that shows how prior admission history and PHQ-9 scores interact with coverage policy. |
 
 ---
 

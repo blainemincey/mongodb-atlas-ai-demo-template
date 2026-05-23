@@ -182,8 +182,8 @@ def patch_setup_smoke_query(query):
     print(f"  Patched  smoke test query in scripts/setup.py")
 
 
-def patch_env(demo_name, db_name):
-    """Update DEMO_NAME and DB_NAME in .env (falls back to .env.example)."""
+def patch_env(demo_name, db_name, domain_name):
+    """Update DEMO_NAME, DB_NAME, and DOMAIN_NAME in .env (falls back to .env.example)."""
     env_path = ENV_FILE if os.path.exists(ENV_FILE) else ENV_EXAMPLE
     if not os.path.exists(env_path):
         print("  WARNING: .env and .env.example not found — skipping env update")
@@ -194,10 +194,15 @@ def patch_env(demo_name, db_name):
         content = re.sub(r'^DEMO_NAME=.*$', f'DEMO_NAME="{demo_name}"', content, flags=re.MULTILINE)
     if db_name:
         content = re.sub(r'^DB_NAME=.*$', f'DB_NAME={db_name}', content, flags=re.MULTILINE)
+    if domain_name:
+        if re.search(r'^DOMAIN_NAME=', content, re.MULTILINE):
+            content = re.sub(r'^DOMAIN_NAME=.*$', f'DOMAIN_NAME={domain_name}', content, flags=re.MULTILINE)
+        else:
+            content += f'\nDOMAIN_NAME={domain_name}\n'
     with open(env_path, "w") as f:
         f.write(content)
     rel = os.path.relpath(env_path, REPO_ROOT)
-    print(f"  Updated  DEMO_NAME, DB_NAME in {rel}")
+    print(f"  Updated  DEMO_NAME, DB_NAME, DOMAIN_NAME in {rel}")
 
 
 def apply_domain(domain_name, update_env=True):
@@ -262,7 +267,7 @@ def apply_domain(domain_name, update_env=True):
 
     # 9. Update .env
     if update_env:
-        patch_env(meta.get("demo_name"), meta.get("db_name"))
+        patch_env(meta.get("demo_name"), meta.get("db_name"), domain_name)
     else:
         print("  Skipped  .env update (--no-env)")
 

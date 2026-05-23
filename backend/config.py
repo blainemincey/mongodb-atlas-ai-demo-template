@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     db_name: str = "demo_db"
     demo_name: str = "Atlas AI Demo"
     voyage_api_key: str
+    domain_name: str = ""
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000
     cors_origin: str = "http://localhost:5173"
