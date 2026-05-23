@@ -60,14 +60,14 @@ export default function Header({ onReset, resetEnabled = false, resetting = fals
               color: "var(--mdb-text)",
               letterSpacing: "-0.02em",
             }}>
-              MongoDB Atlas
+              {demoName}
             </span>
             <span style={{
               marginLeft: 10,
               fontSize: 12,
               color: "var(--mdb-text-dim)",
             }}>
-              {demoName} · Voyage AI + Vector Search
+              MongoDB Atlas · Voyage AI + Vector Search
             </span>
           </div>
         </div>
