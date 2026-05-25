@@ -32,11 +32,11 @@ interface Props {
 
 export default function ScenarioSelector({ active, onSelect, disabled }: Props) {
   return (
-    <div style={{ marginTop: 24, marginBottom: 8 }}>
-      <p style={{ fontSize: 11, color: "var(--mdb-text-dim)", marginBottom: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+    <div style={{ marginTop: "var(--space-5)", marginBottom: "var(--space-2)" }}>
+      <p className="eyebrow" style={{ marginBottom: "var(--space-3)" }}>
         Select Demo Scenario
       </p>
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "var(--space-4)", flexWrap: "wrap" }}>
         {SCENARIOS.map((s) => {
           const isActive = active === s.key;
           return (
@@ -49,27 +49,45 @@ export default function ScenarioSelector({ active, onSelect, disabled }: Props) 
                 minWidth: 280,
                 maxWidth: 480,
                 textAlign: "left",
-                background: isActive ? "var(--mdb-dark-green)" : "var(--mdb-slate)",
-                border: `1px solid ${isActive ? "var(--mdb-green)" : "var(--mdb-border)"}`,
+                background: isActive ? "var(--success-bg)" : "var(--surface)",
+                border: `1px solid ${isActive ? "var(--brand)" : "var(--border)"}`,
                 borderRadius: "var(--radius-lg)",
-                padding: "14px 18px",
-                color: "var(--mdb-text)",
+                padding: "var(--space-4) var(--space-5)",
+                color: "var(--text)",
                 cursor: disabled ? "not-allowed" : "pointer",
                 opacity: disabled ? 0.7 : 1,
-                transition: "border-color 0.2s, background 0.2s",
+                boxShadow: isActive ? "var(--shadow-sm)" : "none",
+                transition: "border-color 0.2s, background 0.2s, box-shadow 0.2s",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                <div>
-                  <span style={{ fontSize: 11, color: "var(--mdb-green)", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-                    {s.label}
-                  </span>
-                </div>
-                {isActive && <span style={{ fontSize: 10, color: "var(--mdb-green)", fontWeight: 700 }}>ACTIVE</span>}
+              <div style={{ marginBottom: 6 }}>
+                <span className="eyebrow eyebrow--accent">
+                  {s.label}
+                </span>
               </div>
-              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 2 }}>{s.title}</div>
-              <div style={{ fontSize: 12, color: "var(--mdb-green)", marginBottom: 6 }}>{s.subtitle}</div>
-              <div style={{ fontSize: 12, color: "var(--mdb-text-dim)", lineHeight: 1.5 }}>{s.detail}</div>
+              <div style={{
+                fontSize: "var(--fs-md)",
+                fontWeight: isActive ? "var(--fw-bold)" : "var(--fw-semibold)",
+                color: "var(--text)",
+                marginBottom: 2,
+              }}>
+                {s.title}
+              </div>
+              <div style={{
+                fontSize: "var(--fs-sm)",
+                color: "var(--accent-mark)",
+                fontFamily: "Source Code Pro, monospace",
+                marginBottom: 6,
+              }}>
+                {s.subtitle}
+              </div>
+              <div style={{
+                fontSize: "var(--fs-sm)",
+                color: "var(--text-muted)",
+                lineHeight: "var(--lh-base)",
+              }}>
+                {s.detail}
+              </div>
             </button>
           );
         })}
