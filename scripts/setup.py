@@ -271,7 +271,7 @@ def main() -> None:
     # ── Smoke Test ────────────────────────────────────────────────
     step("Step 8: Smoke-testing vector search")
 
-    test_query = "TODO replace with domain-specific test query for your knowledge base"
+    test_query = "hardware failure laptop boot disk drive RAM replacement warranty ProSupport"
 
     if test_query.startswith("TODO"):
         log("Smoke test query not set for this domain.")

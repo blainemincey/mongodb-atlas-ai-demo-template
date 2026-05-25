@@ -1,70 +1,73 @@
 """
-Demo records for the Atlas AI Demo scaffold.
+IT Support Ticket Triage — demo records.
 
-REQUIRED fields (the scaffold depends on these):
-  - record_id       : str  — unique ID, e.g. "REC-001-A"
-  - scenario        : str  — "A", "B", or "C"
-  - demo_record     : bool — must be True; used to find demo docs in MongoDB
-  - record_text     : str  — the unstructured text that gets embedded by Voyage AI
-  - record_embedding: absent on insert; written back by the /embed endpoint
-
-OPTIONAL fields (domain-specific — add whatever your demo needs):
-  Any additional fields you include will pass through to the frontend via the
-  [key: string]: unknown index on DemoRecord in types.ts.
-
-TODO: Replace the stub record_text values and add domain-specific fields for
-your target use case before running setup.py.
+Three scenarios covering the most common help desk ticket types:
+  A — Hardware boot failure (clean warranty dispatch path)
+  B — Software ERP crash after OS update (multi-user incident)
+  C — Remote VPN connectivity failure (borderline escalation)
 """
 
 DEMO_RECORDS = {
     "A": {
-        "record_id": "REC-001-A",
+        "record_id": "TKT-001-A",
         "scenario": "A",
         "demo_record": True,
         "processing_status": "PENDING",
-        # ----------------------------------------------------------------
-        # TODO: Replace with Scenario A domain-specific text and fields.
-        # record_text is the field embedded by Voyage AI — make it rich
-        # enough to produce meaningful vector search results.
-        # ----------------------------------------------------------------
+        "ticket_type": "hardware",
+        "priority": "high",
+        "department": "Engineering",
+        "asset_tag": "LT-4821",
         "record_text": (
-            "Scenario A — [TODO: replace with domain-specific unstructured text "
-            "that describes this record. This is the field Voyage AI will embed, "
-            "so include the relevant terminology, categories, and context that "
-            "should match items in your knowledge_base and historical_records.]"
+            "Employee reports that their Dell XPS 15 laptop will not boot as of this morning. "
+            "Device powers on — fans spin and power light illuminates — but the screen remains "
+            "black and the OS never loads. Diagnostics via F12 boot menu show hard drive health "
+            "check failed with error code 2000-0142. Asset tag LT-4821, assigned to Sarah Chen, "
+            "Engineering department, purchased 28 months ago. Device is within the 3-year "
+            "ProSupport warranty. Employee is currently unable to work and requests urgent "
+            "resolution. IT has attempted a power cycle and external monitor connection; issue "
+            "persists. No recent physical damage reported; device has not been dropped or "
+            "exposed to liquid."
         ),
-        # TODO: Add domain-specific structured fields here, e.g.:
-        # "category": "...",
-        # "subcategory": "...",
-        # "requestor_id": "...",
     },
     "B": {
-        "record_id": "REC-001-B",
+        "record_id": "TKT-001-B",
         "scenario": "B",
         "demo_record": True,
         "processing_status": "PENDING",
-        # ----------------------------------------------------------------
-        # TODO: Replace with Scenario B domain-specific text and fields.
-        # ----------------------------------------------------------------
+        "ticket_type": "software",
+        "priority": "medium",
+        "department": "Finance",
+        "asset_tag": "DT-2203",
         "record_text": (
-            "Scenario B — [TODO: replace with domain-specific unstructured text "
-            "for the second use case. Should produce different vector search "
-            "results than Scenario A to illustrate multiple use cases.]"
+            "Employee reports that the company ERP application (SAP S/4HANA) crashes immediately "
+            "on launch since yesterday afternoon. Error message: 'Runtime error: ABAP memory "
+            "overflow — transaction MIRO'. Issue began following the Windows 11 22H2 cumulative "
+            "update pushed by IT at 14:00 on Tuesday. Asset tag DT-2203, assigned to Marcus Webb, "
+            "Finance AP team. Two other Finance users on the same update report the same crash; "
+            "users on the prior update are unaffected. SAP GUI version 7.70 patch 5 was working "
+            "correctly before the Windows update. No recent changes to SAP configuration or user "
+            "permissions. User needs access to process month-end invoices by Friday."
         ),
-        # TODO: Add domain-specific structured fields here.
     },
     "C": {
-        "record_id": "REC-001-C",
+        "record_id": "TKT-001-C",
         "scenario": "C",
         "demo_record": True,
         "processing_status": "PENDING",
-        # ----------------------------------------------------------------
-        # TODO: Replace with Scenario C domain-specific text and fields.
-        # ----------------------------------------------------------------
+        "ticket_type": "network",
+        "priority": "high",
+        "department": "Sales",
+        "asset_tag": "LT-3307",
         "record_text": (
-            "Scenario C — [TODO: replace with domain-specific unstructured text "
-            "for the third use case.]"
+            "Employee reports inability to connect to the corporate VPN from home since Monday "
+            "morning. Cisco AnyConnect client shows error: 'Secure gateway has rejected the "
+            "agent's VPN connect or reconnect request — Reason 442: Failed to enable Virtual "
+            "Adapter'. Issue is isolated to this user; other remote employees on the same ISP "
+            "subnet report no VPN issues. Asset tag LT-3307, assigned to David Park, Sales team. "
+            "Laptop OS: Windows 10 22H2. Home router is a consumer Netgear device; user has not "
+            "changed any router settings. Network adapter driver version is current. Reinstalling "
+            "AnyConnect did not resolve the issue. User is a senior account executive with active "
+            "client commitments requiring CRM and internal tool access."
         ),
-        # TODO: Add domain-specific structured fields here.
     },
 }

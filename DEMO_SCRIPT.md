@@ -1,4 +1,4 @@
-# Demo Script — Healthcare Prior Authorization
+# Demo Script — IT Support Ticket Triage
 
 > This script is accessible from the **Docs** menu inside the running app.
 > Keep it open in a second tab or window while presenting.
@@ -22,10 +22,10 @@ Set up the problem before touching the UI:
 > workflow — where the records, the embeddings, the retrieved context, and the
 > AI output all live in the same database.
 >
-> We're going to process a prior authorization request through four steps: embed it,
-> search for relevant context, and generate an AI-assisted output. Every one
-> of those steps writes its result back to the same MongoDB document. No
-> separate vector store. No separate AI pipeline. One platform."
+> We're going to process an IT support ticket through four steps: embed it,
+> search for relevant context, and generate an AI-assisted triage recommendation.
+> Every one of those steps writes its result back to the same MongoDB document.
+> No separate vector store. No separate AI pipeline. One platform."
 
 ---
 
@@ -34,15 +34,14 @@ Set up the problem before touching the UI:
 **Click:** Select a scenario from the top picker.
 
 **Say:**
-> "Here's the prior authorization request as it exists in MongoDB right now.
-> It has structured fields — service_type, procedure_code, diagnosis_code,
-> plan_type — and a `record_text` field that holds the full clinical narrative.
-> Notice `record_embedding` is null and `processing_status` is PENDING.
-> This is the pre-AI state."
+> "Here's the ticket as it exists in MongoDB right now. It has structured
+> fields — ticket_type, priority, department, asset_tag — and a `record_text`
+> field that holds the full unstructured description. Notice `record_embedding`
+> is null and `processing_status` is PENDING. This is the pre-AI state."
 
-**Key point to land:** This is a real operational document, not a
-pre-processed AI input. The embedding and AI output fields don't exist yet
-— we're about to add them in place.
+**Key point to land:** This is a real operational document, not a pre-processed
+AI input. The embedding and AI output fields don't exist yet — we're about to
+add them in place.
 
 ---
 
@@ -59,7 +58,7 @@ pre-processed AI input. The embedding and AI output fields don't exist yet
 
 **If they ask why store it in the document:**
 > "Because the embedding is deterministic — same text always produces the same
-> vector. Storing it means we call Voyage exactly once per record. Every
+> vector. Storing it means we call Voyage exactly once per ticket. Every
 > subsequent search reuses it. No per-search API calls, no rate-limit risk."
 
 ---
@@ -71,8 +70,7 @@ pre-processed AI input. The embedding and AI output fields don't exist yet
 **Say:**
 > "Atlas Vector Search takes that stored embedding as the query vector and
 > finds semantically similar documents across two collections simultaneously —
-> clinical coverage policies and medical necessity criteria, and comparable
-> past prior authorization decisions.
+> IT resolution procedures and comparable resolved past tickets.
 >
 > This isn't keyword search. It's cosine similarity over 1024-dimensional
 > space — so it surfaces content that means the same thing, not just content
@@ -95,15 +93,15 @@ is the one we stored in Step 2 — no second Voyage API call.
 **Click:** The "Retrieved Context" tab to see results.
 
 **Say:**
-> "These are the top matches, ranked by cosine similarity score. The coverage
-> policies items on the left are the relevant reference material — the clinical
-> criteria and coverage rules that apply to this request. The comparable prior
-> auth cases on the right are the closest analogues from past decisions."
+> "These are the top matches, ranked by cosine similarity score. The resolution
+> procedure items on the left are the relevant reference material — the
+> troubleshooting guides and fix procedures that apply to this ticket. The
+> prior tickets on the right are the closest analogues from past cases."
 
 **Point at the similarity scores:**
 > "A score of 0.85+ means these documents are very close semantically to the
-> record text. That's not a coincidence — the embedding captures what the
-> record is actually about, and these are the most relevant items in the
+> ticket text. That's not a coincidence — the embedding captures what the
+> ticket is actually about, and these are the most relevant items in the
 > collection."
 
 ---
@@ -113,16 +111,16 @@ is the one we stored in Step 2 — no second Voyage API call.
 **Click:** "Generate Output" on the AI Output tab.
 
 **Say:**
-> "Now we assemble the output from the retrieved context and write it back
-> to the original record. Watch the record in Tab 1 — `processing_status`
-> changes, the AI output fields appear, and the supporting reference IDs
-> are stored alongside the determination."
+> "Now we assemble the triage recommendation from the retrieved context and
+> write it back to the original ticket. Watch the record in Tab 1 —
+> `processing_status` changes, the AI output fields appear, and the supporting
+> reference IDs are stored alongside the determination."
 
 **After the write-back, switch to Tab 1:**
-> "Same document. The operational fields, the embedding, and now the AI output
-> — all in one MongoDB document. If an auditor or a downstream system queries
-> this record, they get everything: the raw clinical data, what policies were
-> retrieved, what the AI recommended, and when."
+> "Same document. The operational fields, the embedding, and now the triage
+> recommendation — all in one MongoDB document. If a manager or a downstream
+> system queries this ticket, they get everything: the raw description, what
+> procedures were retrieved, what the AI recommended, and when."
 
 **Key point to land:**
 > "This is the pattern: every step in the AI workflow writes its artifact back
@@ -142,9 +140,9 @@ is the one we stored in Step 2 — no second Voyage API call.
 >
 > The reason that matters is operability. When this goes to production, your
 > ops team doesn't manage a new database tier. Your application code doesn't
-> change its data model. And your compliance team can query the record and
-> see exactly what the AI saw and what it decided — because it's all in the
-> same document."
+> change its data model. And your compliance team can query the ticket and
+> see exactly what the AI saw and what it recommended — because it's all in
+> the same document."
 
 ---
 
@@ -158,16 +156,16 @@ is the one we stored in Step 2 — no second Voyage API call.
 
 **"Is the AI output accurate?"**
 > "This demo uses a template engine by default — no LLM, fully deterministic.
-> The template is grounded in the retrieved context: the KB items and
-> historical records you just saw. Option B in llm.py swaps in a Claude API
-> call if you want a real language model. The storage and retrieval pattern
+> The template is grounded in the retrieved context: the resolution procedures
+> and historical tickets you just saw. Option B in llm.py swaps in a Claude
+> API call if you want a real language model. The storage and retrieval pattern
 > is identical either way."
 
 **"What does this cost at scale?"**
 > "Atlas Vector Search runs on the same cluster as your operational data —
 > no separate pricing tier. Voyage AI charges per token on embedding calls,
 > but because you store the embedding in the document, you call it once per
-> record, not once per query."
+> ticket, not once per query."
 
 ---
 
@@ -175,9 +173,9 @@ is the one we stored in Step 2 — no second Voyage API call.
 
 | Scenario | What it shows |
 |----------|---------------|
-| Medical Imaging — Clean approval path | MRI criteria met after 6 weeks conservative treatment — surfaces imaging authorization guidelines (KB-001, KB-002) and comparable approved cases. Shows how structured fields (service_type, procedure_code, diagnosis_code) refine the vector search context. |
-| Specialty Pharmacy — Step therapy exception request | Adalimumab after two DMARD failures — demonstrates the biologic step therapy KB (KB-003, KB-007) and how the system finds comparable exception-approved cases. Illustrates how documented adverse effects and DAS28 scores drive the determination. |
-| Behavioral Health — Complex residential request | 28-day residential treatment after two prior inpatient admissions — illustrates the PEND path and level-of-care criteria (KB-005, KB-006). Multi-criteria case that shows how prior admission history and PHQ-9 scores interact with coverage policy. |
+| Hardware — Boot Failure | Clean warranty dispatch path — Dell error 2000-0142 matches a KB procedure directly. Shows how structured fields (ticket_type, asset_tag) refine the vector search context. |
+| Software — ERP Crash | Post-update SAP compatibility incident affecting multiple Finance users — demonstrates how the system surfaces the OS rollback procedure and finds prior incidents with the same pattern. |
+| Network — VPN Failure | Single-user remote access failure — borderline between standard fix and escalation. Illustrates how similar past outcomes (RESOLVED vs. ESCALATED) inform the triage recommendation. |
 
 ---
 

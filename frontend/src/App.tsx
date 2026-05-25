@@ -13,9 +13,9 @@ import OutputPanel from "./components/OutputPanel";
 
 // BEGIN_DOMAIN:scenario_config — replaced by scripts/init_domain.py
 const SCENARIO_CONFIG: Record<Scenario, { label: string; description: string }> = {
-  A: { label: "Scenario A", description: "[TODO: describe this scenario]" },
-  B: { label: "Scenario B", description: "[TODO: describe this scenario]" },
-  C: { label: "Scenario C", description: "[TODO: describe this scenario]" },
+  A: { label: "Hardware — Boot Failure", description: "Laptop disk failure under warranty — surfaces standard replacement procedure" },
+  B: { label: "Software — ERP Crash", description: "Post-update SAP crash affecting Finance team — surfaces rollback procedure" },
+  C: { label: "Network — VPN Failure", description: "Remote VPN connectivity failure — borderline resolution vs. escalation" },
 };
 // END_DOMAIN:scenario_config
 

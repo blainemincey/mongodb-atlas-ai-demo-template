@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 from db import get_db
 
 # Record IDs to reset — update if you change demo_records.py
-RECORDS = ["REC-001-A", "REC-001-B", "REC-001-C"]
+RECORDS = ["TKT-001-A", "TKT-001-B", "TKT-001-C"]
 
 # Always cleared — AI output and processing state
 SOFT_RESET_FIELDS = {
