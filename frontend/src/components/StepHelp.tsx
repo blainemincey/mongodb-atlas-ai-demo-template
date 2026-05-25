@@ -44,14 +44,14 @@ export function HelpButton({ open, onToggle }: ButtonProps) {
       onClick={onToggle}
       title={open ? "Close help" : "What MongoDB Atlas does here"}
       style={{
-        width: 20,
-        height: 20,
+        width: 22,
+        height: 22,
         borderRadius: "50%",
-        background: open ? "rgba(0,237,100,0.18)" : "rgba(255,255,255,0.06)",
-        border: `1px solid ${open ? "rgba(0,237,100,0.45)" : "var(--mdb-border)"}`,
-        color: open ? "var(--mdb-green)" : "var(--mdb-text-dim)",
-        fontSize: 11,
-        fontWeight: 700,
+        background: open ? "var(--accent)" : "var(--surface-sunken)",
+        border: `1px solid ${open ? "var(--accent)" : "var(--border-strong)"}`,
+        color: open ? "var(--mist)" : "var(--text-muted)",
+        fontSize: "var(--fs-xs)",
+        fontWeight: "var(--fw-bold)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -74,32 +74,32 @@ export default function StepHelpPanel({ content }: PanelProps) {
     <div
       className="fade-in"
       style={{
-        padding: "12px 18px 14px",
-        background: "rgba(0,237,100,0.03)",
-        borderBottom: "1px solid var(--mdb-border)",
+        padding: "var(--space-3) var(--space-4) var(--space-4)",
+        background: "var(--surface-raised)",
+        borderBottom: "1px solid var(--border)",
         display: "flex",
         flexDirection: "column",
-        gap: 12,
+        gap: "var(--space-3)",
       }}
     >
       <Row
         label="What MongoDB Atlas does here"
         text={content.what}
-        labelColor="var(--mdb-green)"
-        textColor="var(--mdb-text)"
+        labelClass="eyebrow eyebrow--accent"
+        textColor="var(--text)"
       />
       <Row
         label="Why it matters"
         text={content.why}
-        labelColor="var(--mdb-text-dim)"
-        textColor="var(--mdb-text)"
+        labelClass="eyebrow"
+        textColor="var(--text)"
         accent
       />
       <Row
         label="Technical detail"
         text={content.technical}
-        labelColor="var(--mdb-text-dim)"
-        textColor="var(--mdb-text-dim)"
+        labelClass="eyebrow"
+        textColor="var(--text-muted)"
       />
     </div>
   );
@@ -108,35 +108,28 @@ export default function StepHelpPanel({ content }: PanelProps) {
 function Row({
   label,
   text,
-  labelColor,
+  labelClass,
   textColor,
   accent = false,
 }: {
   label: string;
   text: string;
-  labelColor: string;
+  labelClass: string;
   textColor: string;
   accent?: boolean;
 }) {
   return (
     <div style={{
-      borderLeft: accent ? "2px solid var(--mdb-green)" : "2px solid transparent",
-      paddingLeft: accent ? 10 : 0,
+      borderLeft: accent ? "2px solid var(--accent)" : "2px solid transparent",
+      paddingLeft: accent ? "var(--space-3)" : 0,
     }}>
-      <p style={{
-        fontSize: 9,
-        textTransform: "uppercase",
-        letterSpacing: "0.08em",
-        color: labelColor,
-        fontWeight: 700,
-        marginBottom: 3,
-      }}>
+      <p className={labelClass} style={{ marginBottom: 3 }}>
         {label}
       </p>
       <p style={{
-        fontSize: 12,
+        fontSize: "var(--fs-sm)",
         color: textColor,
-        lineHeight: 1.65,
+        lineHeight: "var(--lh-base)",
         margin: 0,
       }}>
         {text}

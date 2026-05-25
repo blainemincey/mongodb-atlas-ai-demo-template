@@ -35,9 +35,9 @@ export default function Header({ onReset, resetEnabled = false, resetting = fals
   return (
     <>
       <header style={{
-        background: "var(--mdb-dark)",
-        borderBottom: "1px solid var(--mdb-border)",
-        padding: "0 24px",
+        background: "var(--bg)",
+        borderBottom: "1px solid var(--border)",
+        padding: "0 var(--space-5)",
         height: 56,
         display: "flex",
         alignItems: "center",
@@ -46,49 +46,48 @@ export default function Header({ onReset, resetEnabled = false, resetting = fals
         top: 0,
         zIndex: 100,
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          {/* MongoDB leaf logo */}
-          <svg width="28" height="28" viewBox="0 0 256 549" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M136.03 0C136.03 0 71.02 66.47 71.02 274.28c0 134.01 63.02 189.9 63.02 189.9l5.97 6.07V0h-3.98z" fill="#00ED64"/>
-            <path d="M141.77 464.25s63.22-55.91 63.22-189.97C204.99 66.47 141.77 0 141.77 0h-3.75v470.25l3.75-6z" fill="#00684A"/>
-            <path d="M138.02 470.25l-5.97-6.07c-2.41 1.91-4.97 3.86-4.97 3.86L138.02 549l10.97-80.69s-2.55-1.95-4.97-3.86l-5.97 6.07-.03-.27z" fill="#00ED64"/>
-          </svg>
-          <div>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
+          <img
+            src="/mongodb-leaf.svg"
+            alt="MongoDB"
+            width={110}
+            height={28}
+            style={{ display: "block", flexShrink: 0 }}
+          />
+          <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-3)" }}>
             <span style={{
-              fontWeight: 600,
-              fontSize: 15,
-              color: "var(--mdb-text)",
-              letterSpacing: "-0.02em",
+              fontWeight: "var(--fw-semibold)",
+              fontSize: "var(--fs-md)",
+              color: "var(--text)",
+              letterSpacing: "-0.01em",
             }}>
               {demoName}
             </span>
             <span style={{
-              marginLeft: 10,
-              fontSize: 12,
-              color: "var(--mdb-text-dim)",
+              fontSize: "var(--fs-sm)",
+              color: "var(--text-faint)",
             }}>
-              MongoDB Atlas · Voyage AI + Vector Search
+              Atlas · Voyage AI · Vector Search
             </span>
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
           <span style={{
-            fontSize: 11,
-            color: "var(--mdb-text-dim)",
-            padding: "3px 8px",
-            border: "1px solid var(--mdb-border)",
+            fontSize: "var(--fs-xs)",
+            color: "var(--text-muted)",
+            padding: "3px 10px",
+            border: "1px solid var(--border)",
             borderRadius: "var(--radius)",
           }}>
             One platform · Operational + AI
           </span>
 
-          {/* Docs dropdown */}
           <div ref={dropdownRef} style={{ position: "relative" }}>
             <button
               className="btn-secondary"
               onClick={() => setDropdownOpen(o => !o)}
-              style={{ fontSize: 11, padding: "5px 10px", display: "flex", alignItems: "center", gap: 5 }}
+              style={{ fontSize: "var(--fs-xs)", padding: "5px 10px", display: "flex", alignItems: "center", gap: 6 }}
             >
               Docs
               <span style={{ fontSize: 9, opacity: 0.7 }}>{dropdownOpen ? "▲" : "▼"}</span>
@@ -99,15 +98,15 @@ export default function Header({ onReset, resetEnabled = false, resetting = fals
                 position: "absolute",
                 top: "calc(100% + 6px)",
                 right: 0,
-                background: "var(--mdb-slate)",
-                border: "1px solid var(--mdb-border)",
+                background: "var(--surface-raised)",
+                border: "1px solid var(--border)",
                 borderRadius: "var(--radius)",
-                minWidth: 140,
+                minWidth: 160,
                 zIndex: 150,
                 overflow: "hidden",
-                boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
+                boxShadow: "var(--shadow-md)",
               }}>
-                {DOCS.map(d => (
+                {DOCS.map((d, i) => (
                   <button
                     key={d.name}
                     onClick={() => { setActiveDoc(d.name); setDropdownOpen(false); }}
@@ -117,14 +116,15 @@ export default function Header({ onReset, resetEnabled = false, resetting = fals
                       textAlign: "left",
                       background: "transparent",
                       border: "none",
-                      borderBottom: "1px solid var(--mdb-border)",
+                      borderBottom: i < DOCS.length - 1 ? "1px solid var(--border)" : "none",
                       borderRadius: 0,
-                      padding: "9px 14px",
-                      fontSize: 12,
-                      color: "var(--mdb-text)",
+                      padding: "10px 14px",
+                      fontSize: "var(--fs-sm)",
+                      fontWeight: 400,
+                      color: "var(--text)",
                       cursor: "pointer",
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "var(--mdb-slate-light)")}
+                    onMouseEnter={e => (e.currentTarget.style.background = "var(--surface)")}
                     onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                   >
                     {d.label}
@@ -139,7 +139,7 @@ export default function Header({ onReset, resetEnabled = false, resetting = fals
               className="btn-secondary"
               onClick={onReset}
               disabled={!resetEnabled || resetting}
-              style={{ fontSize: 11, padding: "5px 12px", whiteSpace: "nowrap" }}
+              style={{ fontSize: "var(--fs-xs)", padding: "5px 12px", whiteSpace: "nowrap" }}
               title="Soft reset: clears AI output and restores PENDING status. Preserves embeddings."
             >
               {resetting ? "Resetting..." : "Reset Demo"}

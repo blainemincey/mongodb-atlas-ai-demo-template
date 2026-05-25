@@ -17,7 +17,7 @@ function isEnabled(n: Step, step: Step): boolean {
 }
 
 function isComplete(n: Step, step: Step): boolean {
-  if (n === 1) return false; // claim record is live, never "done"
+  if (n === 1) return false; // record tab is live, never "done"
   if (n === 4) return step >= 3;
   return step >= n;
 }
@@ -32,14 +32,19 @@ export default function StepTabs({ step, activeTab, onTabClick }: Props) {
   return (
     <div style={{
       display: "flex",
-      borderBottom: "1px solid var(--mdb-border)",
+      borderBottom: "1px solid var(--border)",
       overflowX: "auto",
-      gap: 0,
+      gap: 2,
     }}>
       {STEPS.map((s) => {
         const enabled = isEnabled(s.n, step);
         const complete = isComplete(s.n, step);
         const active = activeTab === s.n;
+
+        const pillClass =
+          active    ? "step-pill step-pill--active" :
+          complete  ? "step-pill step-pill--complete" :
+                      "step-pill step-pill--idle";
 
         return (
           <button
@@ -47,58 +52,31 @@ export default function StepTabs({ step, activeTab, onTabClick }: Props) {
             onClick={() => enabled && onTabClick(s.n)}
             disabled={!enabled}
             style={{
-              background: "transparent",
+              background: active ? "var(--surface-raised)" : "transparent",
               border: "none",
               borderBottom: active
-                ? "2px solid var(--mdb-green)"
-                : "2px solid transparent",
-              borderRadius: 0,
+                ? "3px solid var(--brand)"
+                : "3px solid transparent",
+              borderRadius: "var(--radius) var(--radius) 0 0",
               padding: "10px 16px",
+              marginBottom: -1,
               display: "flex",
               alignItems: "center",
-              gap: 7,
+              gap: 8,
               cursor: enabled ? "pointer" : "not-allowed",
-              opacity: enabled ? 1 : 0.35,
+              opacity: enabled ? 1 : 0.4,
               whiteSpace: "nowrap",
-              transition: "border-color 0.15s, opacity 0.15s",
+              transition: "background 0.15s, border-color 0.15s, opacity 0.15s",
               flexShrink: 0,
             }}
           >
-            {/* Step circle */}
-            <span style={{
-              width: 20, height: 20,
-              borderRadius: "50%",
-              background: complete
-                ? "var(--mdb-green)"
-                : active
-                  ? "transparent"
-                  : "var(--mdb-border)",
-              border: active && !complete ? "2px solid var(--mdb-green)" : "none",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 10,
-              fontWeight: 700,
-              color: complete
-                ? "var(--mdb-dark)"
-                : active
-                  ? "var(--mdb-green)"
-                  : "var(--mdb-text-dim)",
-              flexShrink: 0,
-              transition: "background 0.2s",
-            }}>
+            <span className={pillClass} style={{ width: 20, height: 20, fontSize: 10 }}>
               {complete ? "✓" : s.n}
             </span>
-
-            {/* Label */}
             <span style={{
-              fontSize: 12,
-              fontWeight: active ? 600 : 400,
-              color: active
-                ? "var(--mdb-text)"
-                : complete
-                  ? "var(--mdb-text-dim)"
-                  : "var(--mdb-text-dim)",
+              fontSize: "var(--fs-sm)",
+              fontWeight: active ? "var(--fw-semibold)" : "var(--fw-regular)",
+              color: active ? "var(--text)" : "var(--text-muted)",
             }}>
               {s.label}
             </span>

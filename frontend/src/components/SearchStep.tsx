@@ -16,7 +16,7 @@ interface Props {
   alreadyDone: boolean;
 }
 
-export default function SearchStep({ record, filters, onFiltersChange, loading, onSearch, alreadyDone }: Props) {
+export default function SearchStep({ filters, onFiltersChange, loading, onSearch, alreadyDone }: Props) {
   const [helpOpen, setHelpOpen] = useState(false);
   const { category, outcome } = filters;
 
@@ -27,84 +27,68 @@ export default function SearchStep({ record, filters, onFiltersChange, loading, 
     });
   }
 
-  const filterStyle: React.CSSProperties = {
-    background: "rgba(0,0,0,0.2)",
-    border: "1px solid var(--mdb-border)",
+  const selectStyle: React.CSSProperties = {
+    background: "var(--surface-sunken)",
+    border: "1px solid var(--border)",
     borderRadius: "var(--radius)",
-    padding: "5px 10px",
-    color: "var(--mdb-text)",
-    fontSize: 12,
+    padding: "6px 10px",
+    color: "var(--text)",
+    fontSize: "var(--fs-sm)",
     fontFamily: "inherit",
     outline: "none",
-    minWidth: 100,
+    minWidth: 110,
   };
 
   return (
-    <section style={{
-      background: "var(--mdb-slate)",
-      border: "1px solid var(--mdb-border)",
-      borderRadius: "var(--radius-lg)",
-      overflow: "hidden",
-    }}>
-      <div style={{
-        padding: "10px 18px",
-        background: "rgba(255,255,255,0.03)",
-        borderBottom: "1px solid var(--mdb-border)",
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-      }}>
-        <span style={{
-          width: 22, height: 22,
-          borderRadius: "50%",
-          background: alreadyDone ? "var(--mdb-green)" : "var(--mdb-border)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 11, fontWeight: 700,
-          color: alreadyDone ? "var(--mdb-dark)" : "var(--mdb-text-dim)",
-          flexShrink: 0,
-        }}>
+    <section className="panel">
+      <div className="panel__header">
+        <span className={`step-pill ${alreadyDone ? "step-pill--complete" : "step-pill--idle"}`}>
           {alreadyDone ? "✓" : "3"}
         </span>
-        <span style={{ fontWeight: 600, fontSize: 13 }}>Atlas Vector Search</span>
-        <span style={{ fontSize: 11, color: "var(--mdb-text-dim)" }}>
-          Semantic similarity + hard metadata filters
-        </span>
+        <span className="panel__title">Atlas Vector Search</span>
+        <span className="panel__subtitle">Semantic similarity + hard metadata filters</span>
+        <div className="panel__spacer" />
         <HelpButton open={helpOpen} onToggle={() => setHelpOpen(o => !o)} />
       </div>
 
       {helpOpen && <StepHelpPanel content={STEP_HELP[3]} />}
 
-      <div style={{ padding: "14px 18px" }}>
-        <p style={{ fontSize: 12, color: "var(--mdb-text-dim)", marginBottom: 12, lineHeight: 1.6 }}>
+      <div className="panel__body">
+        <p style={{
+          fontSize: "var(--fs-sm)",
+          color: "var(--text-muted)",
+          marginBottom: "var(--space-3)",
+          lineHeight: "var(--lh-base)",
+        }}>
           Atlas Vector Search finds semantically relevant knowledge base items and historical records
           while honoring the filters below as hard constraints — not hints.
         </p>
 
-        {/* Filters */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginBottom: 14, alignItems: "flex-end" }}>
+        <div style={{
+          display: "flex", flexWrap: "wrap", gap: "var(--space-4)",
+          marginBottom: "var(--space-3)", alignItems: "flex-end",
+        }}>
           <div>
-            <label style={{ display: "block", fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>
-              category
-            </label>
+            <label className="eyebrow" style={{ display: "block", marginBottom: 4 }}>category</label>
             <select
               value={category}
               onChange={(e) => onFiltersChange({ ...filters, category: e.target.value })}
-              style={filterStyle}
+              style={selectStyle}
             >
               <option value="">Any</option>
               {/* BEGIN_DOMAIN:category_options — replaced by scripts/init_domain.py */}
-              <option value="general">General</option>
+              <option value="hardware">Hardware</option>
+              <option value="software">Software</option>
+              <option value="network">Network</option>
               {/* END_DOMAIN:category_options */}
             </select>
           </div>
           <div>
-            <label style={{ display: "block", fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>
-              outcome (historical records)
-            </label>
+            <label className="eyebrow" style={{ display: "block", marginBottom: 4 }}>outcome (historical records)</label>
             <select
               value={outcome}
               onChange={(e) => onFiltersChange({ ...filters, outcome: e.target.value })}
-              style={filterStyle}
+              style={selectStyle}
             >
               <option value="">Any</option>
               <option value="APPROVED">APPROVED only</option>
@@ -115,7 +99,7 @@ export default function SearchStep({ record, filters, onFiltersChange, loading, 
             className="btn-primary"
             onClick={handleSearch}
             disabled={loading}
-            style={{ minWidth: 120 }}
+            style={{ minWidth: 140 }}
           >
             {loading ? (
               <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -127,19 +111,20 @@ export default function SearchStep({ record, filters, onFiltersChange, loading, 
         </div>
 
         <div style={{
-          background: "rgba(0,0,0,0.2)",
-          border: "1px solid var(--mdb-border)",
+          background: "var(--surface-sunken)",
+          border: "1px solid var(--border)",
           borderRadius: "var(--radius)",
           padding: "8px 12px",
-          fontSize: 11,
-          color: "var(--mdb-text-dim)",
+          fontSize: "var(--fs-xs)",
+          color: "var(--text-muted)",
+          fontFamily: "Source Code Pro, monospace",
         }}>
-          <code style={{ color: "var(--mdb-green)" }}>$vectorSearch</code>
+          <span style={{ color: "var(--accent-mark)", fontWeight: 600 }}>$vectorSearch</span>
           {" — numCandidates: 80, limit: 3 (knowledge_base), limit: 3 (historical_records), "}
           filter: {"{ category: "}
-          <code style={{ color: "var(--mdb-text)" }}>"{category || "any"}"</code>
+          <span style={{ color: "var(--text)" }}>"{category || "any"}"</span>
           {", outcome: "}
-          <code style={{ color: "var(--mdb-text)" }}>"{outcome || "any"}"</code>
+          <span style={{ color: "var(--text)" }}>"{outcome || "any"}"</span>
           {" }"}
         </div>
       </div>

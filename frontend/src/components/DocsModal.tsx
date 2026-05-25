@@ -44,42 +44,52 @@ export default function DocsModal({ doc, onClose }: Props) {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={onClose}
         style={{
           position: "fixed", inset: 0,
-          background: "rgba(0,0,0,0.55)",
+          background: "rgba(0,0,0,0.60)",
+          backdropFilter: "blur(2px)",
           zIndex: 200,
         }}
       />
 
-      {/* Side panel */}
       <div style={{
         position: "fixed", top: 0, right: 0, bottom: 0,
-        width: "min(780px, 90vw)",
-        background: "var(--mdb-slate)",
-        borderLeft: "1px solid var(--mdb-border)",
+        width: "min(820px, 92vw)",
+        background: "var(--surface)",
+        borderLeft: "1px solid var(--border)",
+        boxShadow: "var(--shadow-md)",
         zIndex: 201,
         display: "flex",
         flexDirection: "column",
       }}>
-        {/* Header */}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "14px 20px",
-          borderBottom: "1px solid var(--mdb-border)",
-          background: "var(--mdb-dark)",
+          padding: "var(--space-4) var(--space-5)",
+          borderBottom: "1px solid var(--border)",
+          background: "var(--surface-raised)",
           flexShrink: 0,
         }}>
-          <span style={{ fontWeight: 600, fontSize: 14, color: "var(--mdb-text)" }}>
+          <span style={{
+            fontWeight: "var(--fw-semibold)",
+            fontSize: "var(--fs-md)",
+            color: "var(--text)",
+          }}>
             {title || "Loading…"}
           </span>
           <button
             onClick={onClose}
             style={{
-              background: "transparent", border: "none", color: "var(--mdb-text-dim)",
-              fontSize: 18, lineHeight: 1, padding: "2px 6px", cursor: "pointer",
+              background: "transparent",
+              border: "1px solid var(--border)",
+              color: "var(--text-muted)",
+              fontSize: 14,
+              lineHeight: 1,
+              padding: "4px 9px",
+              cursor: "pointer",
+              borderRadius: "var(--radius)",
+              fontWeight: "var(--fw-regular)",
             }}
             title="Close (Esc)"
           >
@@ -87,13 +97,16 @@ export default function DocsModal({ doc, onClose }: Props) {
           </button>
         </div>
 
-        {/* Body */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "20px 28px" }}>
+        <div style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: "var(--space-5) var(--space-6)",
+        }}>
           {loading && (
-            <div style={{ color: "var(--mdb-text-dim)", fontSize: 13 }}>Loading…</div>
+            <div style={{ color: "var(--text-muted)", fontSize: "var(--fs-base)" }}>Loading…</div>
           )}
           {error && (
-            <div style={{ color: "var(--mdb-error)", fontSize: 13 }}>{error}</div>
+            <div style={{ color: "var(--error)", fontSize: "var(--fs-base)" }}>{error}</div>
           )}
           {content && (
             <div

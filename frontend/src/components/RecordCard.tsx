@@ -5,26 +5,11 @@ import StepHelpPanel, { HelpButton, STEP_HELP } from "./StepHelp";
 function Field({ label, value, mono = false, highlight = false }: {
   label: string; value: React.ReactNode; mono?: boolean; highlight?: boolean;
 }) {
+  const valueClass = `field-row__value${mono ? " field-row__value--mono" : ""}`;
   return (
-    <div style={{
-      display: "flex",
-      gap: 8,
-      padding: "5px 0",
-      borderBottom: "1px solid rgba(255,255,255,0.04)",
-      background: highlight ? "rgba(0,237,100,0.06)" : "transparent",
-      transition: "background 0.4s",
-    }}>
-      <span style={{ minWidth: 220, fontSize: 11, color: "var(--mdb-text-dim)", flexShrink: 0 }}>
-        {label}
-      </span>
-      <span style={{
-        fontSize: 12,
-        color: highlight ? "var(--mdb-green)" : "var(--mdb-text)",
-        fontFamily: mono ? "Source Code Pro, monospace" : "inherit",
-        wordBreak: "break-word",
-      }}>
-        {value}
-      </span>
+    <div className={`field-row${highlight ? " field-row--highlight" : ""}`}>
+      <span className="field-row__label">{label}</span>
+      <span className={valueClass}>{value}</span>
     </div>
   );
 }
@@ -45,106 +30,73 @@ interface Props {
 export default function RecordCard({ record, updated }: Props) {
   const [helpOpen, setHelpOpen] = useState(false);
   return (
-    <section style={{
-      background: "var(--mdb-slate)",
-      border: "1px solid var(--mdb-border)",
-      borderRadius: "var(--radius-lg)",
-      overflow: "hidden",
-    }}
-    className={updated ? "highlight-update" : ""}
-    >
-      {/* Section header */}
-      <div style={{
-        padding: "10px 18px",
-        background: "rgba(255,255,255,0.03)",
-        borderBottom: "1px solid var(--mdb-border)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: 8,
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{
-            width: 8, height: 8, borderRadius: "50%",
-            background: "var(--mdb-green)",
-            display: "inline-block",
-          }} />
-          <span style={{ fontWeight: 600, fontSize: 13 }}>
-            Record
-          </span>
-          <code style={{
-            fontSize: 11,
-            color: "var(--mdb-green)",
-            background: "rgba(0,237,100,0.1)",
-            padding: "1px 6px",
-            borderRadius: 3,
-          }}>
-            demo_db.records
-          </code>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <StatusBadge status={record.processing_status} />
-          <span style={{ fontSize: 11, color: "var(--mdb-text-dim)" }}>
-            {record.record_id}
-          </span>
-          <HelpButton open={helpOpen} onToggle={() => setHelpOpen(o => !o)} />
-        </div>
+    <section className={`panel ${updated ? "highlight-update" : ""}`}>
+      <div className="panel__header">
+        <span style={{
+          width: 8, height: 8, borderRadius: "50%",
+          background: "var(--brand)",
+          display: "inline-block",
+        }} />
+        <span className="panel__title">Record</span>
+        <code className="code-inline">demo_db.records</code>
+        <div className="panel__spacer" />
+        <StatusBadge status={record.processing_status} />
+        <span className="panel__subtitle" style={{ fontFamily: "Source Code Pro, monospace" }}>
+          {record.record_id}
+        </span>
+        <HelpButton open={helpOpen} onToggle={() => setHelpOpen(o => !o)} />
       </div>
 
       {helpOpen && <StepHelpPanel content={STEP_HELP[1]} />}
 
-      <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 0 }}>
-        {/* Processing status */}
-        <p style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
-          Status
-        </p>
+      <div className="panel__body" style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+        <p className="eyebrow" style={{ marginBottom: "var(--space-2)" }}>Status</p>
         <Field label="processing_status" value={<StatusBadge status={record.processing_status} />} />
         <Field label="scenario" value={record.scenario} mono />
 
-        {/* Embedding status */}
-        <p style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, marginTop: 14 }}>
-          Voyage AI Embedding (stored in this document)
+        <p className="eyebrow" style={{ marginBottom: "var(--space-2)", marginTop: "var(--space-4)" }}>
+          Voyage AI Embedding <code className="code-inline" style={{ marginLeft: 6 }}>stored in this document</code>
         </p>
-        <Field label="record_embedding"
+        <Field
+          label="record_embedding"
           value={
             record.record_embedding
-              ? <span style={{ color: "var(--mdb-green)" }}>
+              ? <span style={{ color: "var(--mist)" }}>
                   {record.record_embedding} · model: {record.embedding_model}
                 </span>
-              : <span style={{ color: "var(--mdb-text-dim)" }}>null — not yet generated</span>
+              : <span style={{ color: "var(--text-faint)" }}>null — not yet generated</span>
           }
         />
-        <Field label="embedding_generated_at"
+        <Field
+          label="embedding_generated_at"
           value={record.embedding_generated_at || "null"}
           mono
         />
 
-        {/* Record Text */}
-        <p style={{ fontSize: 10, color: "var(--mdb-text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, marginTop: 14 }}>
-          Record Text (unstructured — embedded by Voyage AI)
+        <p className="eyebrow" style={{ marginBottom: "var(--space-2)", marginTop: "var(--space-4)" }}>
+          Record Text <span className="muted" style={{ textTransform: "none", letterSpacing: 0, fontWeight: 400 }}>— unstructured, embedded by Voyage AI</span>
         </p>
         <div style={{
-          background: "rgba(0,0,0,0.25)",
-          border: "1px solid var(--mdb-border)",
+          background: "var(--surface-sunken)",
+          border: "1px solid var(--border)",
           borderRadius: "var(--radius)",
-          padding: "10px 12px",
+          padding: "var(--space-3) var(--space-3)",
           maxHeight: 200,
           overflowY: "auto",
-          fontSize: 11,
-          lineHeight: 1.7,
-          color: "var(--mdb-text-code)",
+          fontSize: "var(--fs-xs)",
+          lineHeight: "var(--lh-loose)",
+          color: "var(--text-code)",
+          fontFamily: "Source Code Pro, monospace",
           whiteSpace: "pre-wrap",
           wordBreak: "break-word",
         }}>
           {record.record_text}
         </div>
 
-        {/* AI Output (written back) */}
         {record.ai_output && (
           <>
-            <p style={{ fontSize: 10, color: "var(--mdb-green)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6, marginTop: 14, fontWeight: 600 }}>
-              AI Output (written back to this record)
+            <p className="eyebrow eyebrow--accent" style={{ marginBottom: "var(--space-2)", marginTop: "var(--space-4)" }}>
+              AI Output — written back to this record
             </p>
             <Field label="ai_determination" value={record.ai_determination || ""} highlight />
             <Field label="ai_output_generated_at" value={record.ai_output_generated_at || ""} mono />
